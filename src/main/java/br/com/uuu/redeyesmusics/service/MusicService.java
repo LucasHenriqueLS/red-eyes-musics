@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.uuu.redeyesmusics.converter.MusicConverter;
 import br.com.uuu.redeyesmusics.dto.error.exception.NotFoundException;
-import br.com.uuu.redeyesmusics.dto.input.MusicCreateInput;
-import br.com.uuu.redeyesmusics.dto.input.MusicUpdateInput;
+import br.com.uuu.redeyesmusics.dto.input.music.MusicCreateInput;
+import br.com.uuu.redeyesmusics.dto.input.music.MusicUpdateInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Music;
 import br.com.uuu.redeyesmusics.nosql.repository.MusicRepository;
 import br.com.uuu.redeyesmusics.nosql.util.Genre;

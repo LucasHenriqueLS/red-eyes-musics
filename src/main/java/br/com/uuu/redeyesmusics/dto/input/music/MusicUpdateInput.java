@@ -1,4 +1,4 @@
-package br.com.uuu.redeyesmusics.dto.input;
+package br.com.uuu.redeyesmusics.dto.input.music;
 
 import java.util.List;
 import java.util.Map;
@@ -20,14 +20,12 @@ public class MusicUpdateInput {
 
 	private Language originalLanguage;
 
-	private Map<Language, String> names;
+	private Map<Language, String> updatedNames;
 
-	private Map<Language, String> lyrics;
+	private Map<Language, String> updatedLyrics;
 	
 	private List<String> composersIds;
 	
 	@NotBlank
 	private String proofreaderId;
-	
-	private List<Language> updatedLanguages;
 }

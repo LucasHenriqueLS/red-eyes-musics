@@ -3,8 +3,8 @@ package br.com.uuu.redeyesmusics.converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.uuu.redeyesmusics.dto.input.MusicCreateInput;
-import br.com.uuu.redeyesmusics.dto.input.MusicUpdateInput;
+import br.com.uuu.redeyesmusics.dto.input.music.MusicCreateInput;
+import br.com.uuu.redeyesmusics.dto.input.music.MusicUpdateInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Music;
 import br.com.uuu.redeyesmusics.service.ArtistService;
 
@@ -36,7 +36,7 @@ public class MusicConverter {
 	
 	public Music toUpdatedEntity(Music music, MusicUpdateInput input) {
 
-		input.getUpdatedLanguages().forEach((language) -> {
+		input.getUpdatedNames().keySet().forEach(language -> {
 			if (!music.getNames().containsKey(language)) {
 				music.getSubmittersIds().put(language, input.getProofreaderId());
 			} else {
@@ -50,11 +50,15 @@ public class MusicConverter {
 		if (input.getOriginalLanguage() != null) {
 			music.setOriginalLanguage(input.getOriginalLanguage());
 		}
-		if (input.getNames() != null && !input.getNames().isEmpty()) {
-			music.setNames(input.getNames());
+		if (input.getUpdatedNames() != null && !input.getUpdatedNames().isEmpty()) {
+			input.getUpdatedNames().forEach((language, name) -> {
+				music.getNames().put(language, name);				
+			});
 		}
-		if (input.getLyrics() != null && !input.getLyrics().isEmpty()) {
-			music.setLyrics(input.getLyrics());
+		if (input.getUpdatedLyrics() != null && !input.getUpdatedLyrics().isEmpty()) {
+			input.getUpdatedLyrics().forEach((language, lyric) -> {
+				music.getLyrics().put(language, lyric);				
+			});
 		}
 		if (input.getComposersIds() != null && !input.getComposersIds().isEmpty()) {
 			music.setComposersIds(input.getComposersIds());

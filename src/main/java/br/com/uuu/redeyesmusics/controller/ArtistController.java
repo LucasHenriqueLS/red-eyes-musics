@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.uuu.redeyesmusics.dto.input.ArtistInput;
+import br.com.uuu.redeyesmusics.dto.input.artist.ArtistInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Artist;
 import br.com.uuu.redeyesmusics.service.ArtistService;
 import jakarta.validation.Valid;

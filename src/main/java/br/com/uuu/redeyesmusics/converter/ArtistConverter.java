@@ -2,7 +2,7 @@ package br.com.uuu.redeyesmusics.converter;
 
 import org.springframework.stereotype.Component;
 
-import br.com.uuu.redeyesmusics.dto.input.ArtistInput;
+import br.com.uuu.redeyesmusics.dto.input.artist.ArtistInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Artist;
 
 @Component

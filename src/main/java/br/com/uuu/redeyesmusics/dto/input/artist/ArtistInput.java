@@ -1,4 +1,4 @@
-package br.com.uuu.redeyesmusics.dto.input;
+package br.com.uuu.redeyesmusics.dto.input.artist;
 
 import java.util.List;
 

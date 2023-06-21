@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.uuu.redeyesmusics.converter.ArtistConverter;
-import br.com.uuu.redeyesmusics.dto.input.ArtistInput;
+import br.com.uuu.redeyesmusics.dto.input.artist.ArtistInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Artist;
 import br.com.uuu.redeyesmusics.nosql.repository.ArtistRepository;
 

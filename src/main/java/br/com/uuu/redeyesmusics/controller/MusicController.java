@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.uuu.redeyesmusics.dto.input.MusicCreateInput;
-import br.com.uuu.redeyesmusics.dto.input.MusicUpdateInput;
+import br.com.uuu.redeyesmusics.dto.input.music.MusicCreateInput;
+import br.com.uuu.redeyesmusics.dto.input.music.MusicUpdateInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Music;
 import br.com.uuu.redeyesmusics.nosql.util.Genre;
 import br.com.uuu.redeyesmusics.service.MusicService;

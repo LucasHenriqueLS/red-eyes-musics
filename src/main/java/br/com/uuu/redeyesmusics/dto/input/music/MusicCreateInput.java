@@ -1,4 +1,4 @@
-package br.com.uuu.redeyesmusics.dto.input;
+package br.com.uuu.redeyesmusics.dto.input.music;
 
 import java.util.List;
 import java.util.Map;
