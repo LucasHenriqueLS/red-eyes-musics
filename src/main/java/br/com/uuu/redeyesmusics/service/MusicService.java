@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.uuu.redeyesmusics.converter.MusicConverter;
-import br.com.uuu.redeyesmusics.dto.input.MusicInput;
+import br.com.uuu.redeyesmusics.dto.error.exception.NotFoundException;
+import br.com.uuu.redeyesmusics.dto.input.MusicCreateInput;
+import br.com.uuu.redeyesmusics.dto.input.MusicUpdateInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Music;
 import br.com.uuu.redeyesmusics.nosql.repository.MusicRepository;
+import br.com.uuu.redeyesmusics.nosql.util.Genre;
 
 @Service
 public class MusicService {
@@ -23,7 +26,28 @@ public class MusicService {
 		return musicRepository.findAll();
 	}
 	
-	public Music save(MusicInput input) {
+	public Music getById(String musicId) {
+		return musicRepository.findById(musicId).orElseThrow(() -> new NotFoundException(musicId, "Música"));
+	}
+
+	public List<Music> getByArtistId(String artistId) {
+		return musicRepository.getByArtistId(artistId);
+	}
+	
+	public List<Music> getByName(String musicName) {
+		return musicRepository.getByName(musicName);
+	}
+	
+	public List<Music> getByGenre(Genre musicGenre) {
+		return musicRepository.getByGenre(musicGenre);
+	}
+	
+	public Music save(MusicCreateInput input) {
 		return musicRepository.save(musicConverter.toEntity(input));
+	}
+	
+	public Music update(String musicId, MusicUpdateInput input) {
+		var music = getById(musicId);
+		return musicRepository.save(musicConverter.toUpdatedEntity(music, input));
 	}
 }
