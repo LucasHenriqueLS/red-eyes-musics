@@ -14,11 +14,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-
 public class MusicCreateInput {
 	
 	@NotBlank
 	private String artistId;
+
+	private String albumId;
 	
 	@NotNull
 	private List<Genre> genres;

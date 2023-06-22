@@ -50,4 +50,8 @@ public class MusicService {
 		var music = getById(musicId);
 		return musicRepository.save(musicConverter.toUpdatedEntity(music, input));
 	}
+	
+	public void delete(String musicId) {
+		musicRepository.deleteById(musicId);
+	}
 }

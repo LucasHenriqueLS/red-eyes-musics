@@ -1,22 +1,16 @@
 package br.com.uuu.redeyesmusics.converter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.uuu.redeyesmusics.dto.input.music.MusicCreateInput;
 import br.com.uuu.redeyesmusics.dto.input.music.MusicUpdateInput;
 import br.com.uuu.redeyesmusics.nosql.entity.Music;
-import br.com.uuu.redeyesmusics.service.ArtistService;
 
 @Component
 public class MusicConverter {
-	
-	@Autowired
-	private ArtistService artistService;
 
 	public Music toEntity(MusicCreateInput input) {
 		var music = new Music();
-		music.setId(String.format("%s_%s", artistService.getById(input.getArtistId()).getName(), input.getNames().get(input.getOriginalLanguage())));
 		music.setArtistId(input.getArtistId());
 		music.setGenres(input.getGenres());
 		music.setOriginalLanguage(input.getOriginalLanguage());

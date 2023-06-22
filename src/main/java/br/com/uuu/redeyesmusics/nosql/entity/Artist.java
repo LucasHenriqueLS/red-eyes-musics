@@ -22,8 +22,4 @@ public class Artist {
 	private String name;
 	
 	private List<String> otherNames;
-	
-//	private List<Music> musics;
-//	
-//	private List<Album> albuns;
 }
