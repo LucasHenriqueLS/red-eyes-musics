@@ -31,7 +31,7 @@ public class MusicService {
 	}
 
 	public List<Music> getByArtistId(String artistId) {
-		return musicRepository.getByArtistId(artistId);
+		return musicRepository.findByArtistId(artistId);
 	}
 	
 	public List<Music> getByName(String musicName) {

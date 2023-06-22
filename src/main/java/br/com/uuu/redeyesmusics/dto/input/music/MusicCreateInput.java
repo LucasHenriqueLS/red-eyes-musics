@@ -18,8 +18,6 @@ public class MusicCreateInput {
 	
 	@NotBlank
 	private String artistId;
-
-	private String albumId;
 	
 	@NotNull
 	private List<Genre> genres;
@@ -27,11 +25,11 @@ public class MusicCreateInput {
 	@NotNull
 	private Language originalLanguage;
 	
-	@NotBlank
-	private Map<Language, String> names;
+	@NotNull
+	private Map<Language, String> nameByLanguages;
 	
-	@NotBlank
-	private Map<Language, String> lyrics;
+	@NotNull
+	private Map<Language, String> lyricByLanguages;
 	
 	private List<String> composersIds;
 	

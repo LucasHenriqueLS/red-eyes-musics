@@ -21,11 +21,13 @@ public class Album {
 	@Id
 	private String id;
 	
+	private String artistId;
+	
 	private String name;
 	
 	private LocalDate releaseDate;
 	
-	private String recordCompany;
+	private String recordCompanyName;
 	
-	private Map<String, List<String>> musicsByDisk;
+	private Map<String, List<String>> musicsIdsByDiskNames;
 }

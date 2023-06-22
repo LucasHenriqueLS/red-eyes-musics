@@ -22,4 +22,8 @@ public class Artist {
 	private String name;
 	
 	private List<String> otherNames;
+	
+	private List<String> musicsIds;
+	
+	private List<String> albumsIds;
 }

@@ -30,24 +30,24 @@ public class Music {
 	
 	private Language originalLanguage;
 	
-	private Map<Language, String> names;
+	private Map<Language, String> nameByLanguages;
 	
-	private Map<Language, String> lyrics;
+	private Map<Language, String> lyricByLanguages;
 	
 	private List<String> composersIds;
 	
-	private Map<Language, String> submittersIds;
+	private Map<Language, String> submitterIdByLanguages;
 
-	private Map<Language, List<String>> proofreadersIds;
+	private Map<Language, List<String>> proofreadersIdsByLanguages;
 	
 //	private String videoLink;
 	
 	public Music() {
 		genres = new ArrayList<>();
-		names = new LinkedHashMap<>();
-		lyrics = new LinkedHashMap<>();
+		nameByLanguages = new LinkedHashMap<>();
+		lyricByLanguages = new LinkedHashMap<>();
 		composersIds = new ArrayList<>();
-		submittersIds = new LinkedHashMap<>();
-		proofreadersIds = new LinkedHashMap<>();
+		submitterIdByLanguages = new LinkedHashMap<>();
+		proofreadersIdsByLanguages = new LinkedHashMap<>();
 	}
 }
