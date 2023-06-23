@@ -39,7 +39,7 @@ public class MusicService {
 	}
 	
 	public List<Music> getByGenre(Genre musicGenre) {
-		return musicRepository.getByGenre(musicGenre);
+		return musicRepository.findByGenres(musicGenre);
 	}
 	
 	public Music save(MusicCreateInput input) {

@@ -34,7 +34,7 @@ public class Music {
 	
 	private Map<Language, String> lyricByLanguages;
 	
-	private List<String> composersIds;
+	private List<String> composersNames;
 	
 	private Map<Language, String> submitterIdByLanguages;
 
@@ -46,7 +46,7 @@ public class Music {
 		genres = new ArrayList<>();
 		nameByLanguages = new LinkedHashMap<>();
 		lyricByLanguages = new LinkedHashMap<>();
-		composersIds = new ArrayList<>();
+		composersNames = new ArrayList<>();
 		submitterIdByLanguages = new LinkedHashMap<>();
 		proofreadersIdsByLanguages = new LinkedHashMap<>();
 	}

@@ -29,10 +29,10 @@ public class MusicConverter {
 		music.setNameByLanguages(input.getNameByLanguages());
 		music.setLyricByLanguages(input.getLyricByLanguages());
 		
-		if (input.getComposersIds() != null && !input.getComposersIds().isEmpty()) {
-			music.setComposersIds(input.getComposersIds());			
+		if (input.getComposersNames() != null && !input.getComposersNames().isEmpty()) {
+			music.setComposersNames(input.getComposersNames());			
 		} else {
-			music.getComposersIds().add("Desconhecido");
+			music.getComposersNames().add("Desconhecido");
 		}
 
 		music.getNameByLanguages().keySet().forEach(language -> {
@@ -69,7 +69,7 @@ public class MusicConverter {
 			});
 		}
 		if (input.getComposersIds() != null && !input.getComposersIds().isEmpty()) {
-			music.setComposersIds(input.getComposersIds());
+			music.setComposersNames(input.getComposersIds());
 		}
 		
 		return music;

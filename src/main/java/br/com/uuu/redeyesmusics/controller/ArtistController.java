@@ -16,7 +16,7 @@ import br.com.uuu.redeyesmusics.service.ArtistService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("artist")
+@RequestMapping("artists")
 public class ArtistController {
 
 	@Autowired

@@ -31,7 +31,7 @@ public class MusicCreateInput {
 	@NotNull
 	private Map<Language, String> lyricByLanguages;
 	
-	private List<String> composersIds;
+	private List<String> composersNames;
 	
 	@NotBlank
 	private String submitterId;
