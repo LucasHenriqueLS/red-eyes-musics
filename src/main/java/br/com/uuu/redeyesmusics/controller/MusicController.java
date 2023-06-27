@@ -57,7 +57,7 @@ public class MusicController {
 	}
 	
 	@PutMapping("{musicId}")
-	public Music update(@Valid @PathVariable("musicId") String musicId, @RequestBody MusicUpdateInput input) {
+	public Music update(@Valid @PathVariable("musicId") String musicId, @Valid @RequestBody MusicUpdateInput input) {
 		return musicService.update(musicId, input);
 	}
 	

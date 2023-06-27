@@ -1,5 +1,6 @@
 package br.com.uuu.redeyesmusics.nosql.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -26,4 +27,10 @@ public class Artist {
 	private List<String> musicsIds;
 	
 	private List<String> albumsIds;
+	
+	public Artist() {
+		otherNames = new ArrayList<>();
+		musicsIds = new ArrayList<>();
+		albumsIds = new ArrayList<>();
+	}
 }
