@@ -22,6 +22,9 @@ public class MusicService {
 	@Autowired
 	private MusicConverter musicConverter;
 	
+	@Autowired
+	private ArtistService artistService;
+	
 	public List<Music> getAll() {
 		return musicRepository.findAll();
 	}
@@ -43,7 +46,9 @@ public class MusicService {
 	}
 	
 	public Music save(MusicCreateInput input) {
-		return musicRepository.save(musicConverter.toEntity(input));
+		var music = musicRepository.save(musicConverter.toEntity(input));
+		artistService.addMusicId(input.getArtistId(), music.getId());
+		return music;
 	}
 	
 	public Music update(String musicId, MusicUpdateInput input) {

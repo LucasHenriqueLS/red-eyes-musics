@@ -3,6 +3,10 @@ package br.com.uuu.redeyesmusics.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import br.com.uuu.redeyesmusics.converter.ArtistConverter;
@@ -20,6 +24,9 @@ public class ArtistService {
 	@Autowired
 	private ArtistConverter artistConverter;
 	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
 	public List<Artist> getAll() {
 		return artistRepository.findAll();
 	}
@@ -34,5 +41,25 @@ public class ArtistService {
 	
 	public Boolean existsById(String artistId) {
 		return artistRepository.existsById(artistId);
+	}
+	
+	public void addMusicId(String artistId, String musicId) {
+		var update = new Update().addToSet("musicsIds", musicId);
+		mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(artistId)), update, Artist.class);
+	}
+	
+	public void removeMusicId(String artistId, String musicId) {
+		var update = new Update().pull("musicsIds", musicId);
+		mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(artistId)), update, Artist.class);
+	}
+	
+	public void addAlbumId(String artistId, String albumId) {
+		var update = new Update().addToSet("albumsIds", albumId);
+		mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(artistId)), update, Artist.class);
+	}
+	
+	public void removeAlbumId(String artistId, String albumId) {
+		var update = new Update().pull("albumsIds", albumId);
+		mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(artistId)), update, Artist.class);
 	}
 }

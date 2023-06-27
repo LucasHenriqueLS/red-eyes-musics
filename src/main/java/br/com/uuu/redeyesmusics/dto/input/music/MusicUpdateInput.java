@@ -13,8 +13,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-
 public class MusicUpdateInput {
+	
+	private String artistId;
 
 	private List<Genre> genres;
 
@@ -24,7 +25,7 @@ public class MusicUpdateInput {
 
 	private Map<Language, String> updatedLyrics;
 	
-	private List<String> composersIds;
+	private List<String> composersNames;
 	
 	@NotBlank
 	private String proofreaderId;

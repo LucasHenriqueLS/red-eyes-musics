@@ -14,7 +14,6 @@ public interface MusicRepository extends MongoRepository<Music, String> {
 
 	List<Music> findByGenres(Genre musicGenre);
 	
-	@Query("{$where: 'for (var name in this.nameByLanguages) { if (this.nameByLanguages[name] === \"?0\") { return true; } } return false;'}")
-//	@Query("{$where: 'for (var name in this.nameByLanguages) { this.nameByLanguages[name] === \"?0\" ? true : false'}")
+	@Query("{$where: 'for (var name in this.nameByLanguages) if (this.nameByLanguages[name] === \"?0\") return true; return false;'}")
 	List<Music> getByName(String musicName);
 }
