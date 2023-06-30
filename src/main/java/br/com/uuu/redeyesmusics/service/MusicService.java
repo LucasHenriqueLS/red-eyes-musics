@@ -41,8 +41,8 @@ public class MusicService {
 		return musicRepository.getByName(musicName);
 	}
 	
-	public List<Music> getByGenre(Genre musicGenre) {
-		return musicRepository.findByGenres(musicGenre);
+	public List<Music> getByGenre(Genre genre) {
+		return musicRepository.findByGenres(genre);
 	}
 	
 	public Music save(MusicCreateInput input) {

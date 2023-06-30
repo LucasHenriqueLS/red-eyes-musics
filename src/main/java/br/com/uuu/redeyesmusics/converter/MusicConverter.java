@@ -49,8 +49,8 @@ public class MusicConverter {
 	
 	public Music toUpdatedEntity(Music music, MusicUpdateInput input) {
 
-		if (input.getUpdatedNames() != null && !input.getUpdatedNames().isEmpty()) {
-			input.getUpdatedNames().keySet().forEach(language -> {
+		if (input.getUpdatedNameByLanguages() != null && !input.getUpdatedNameByLanguages().isEmpty()) {
+			input.getUpdatedNameByLanguages().keySet().forEach(language -> {
 				if (!music.getNameByLanguages().containsKey(language)) {
 					music.getSubmitterIdByLanguages().put(language, input.getProofreaderId());
 				} else {
@@ -71,13 +71,13 @@ public class MusicConverter {
 		if (input.getOriginalLanguage() != null) {
 			music.setOriginalLanguage(input.getOriginalLanguage());
 		}
-		if (input.getUpdatedNames() != null && !input.getUpdatedNames().isEmpty()) {
-			input.getUpdatedNames().forEach((language, name) -> {
+		if (input.getUpdatedNameByLanguages() != null && !input.getUpdatedNameByLanguages().isEmpty()) {
+			input.getUpdatedNameByLanguages().forEach((language, name) -> {
 				music.getNameByLanguages().put(language, name);				
 			});
 		}
-		if (input.getUpdatedLyrics() != null && !input.getUpdatedLyrics().isEmpty()) {
-			input.getUpdatedLyrics().forEach((language, lyric) -> {
+		if (input.getUpdatedLyricByLanguages() != null && !input.getUpdatedLyricByLanguages().isEmpty()) {
+			input.getUpdatedLyricByLanguages().forEach((language, lyric) -> {
 				music.getLyricByLanguages().put(language, lyric);				
 			});
 		}

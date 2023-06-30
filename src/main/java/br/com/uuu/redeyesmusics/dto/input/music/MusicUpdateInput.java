@@ -25,11 +25,11 @@ public class MusicUpdateInput {
 	@Schema(description = "Idioma original da música", example = "JAPANESE")
 	private Language originalLanguage;
 
-	@Schema(description = "Nome da música para cada idioma mapeado", example = "{\"BRAZILIAN_PORTUGUESE\": \"Tingimento Índigo\",\"ENGLISH\": \"Indigo Dye\"}")
-	private Map<Language, String> updatedNames;
+	@Schema(description = "Nome da música para cada idioma mapeado que foi atualizado", example = "{\"BRAZILIAN_PORTUGUESE\": \"Tingimento Índigo\",\"ENGLISH\": \"Indigo Dye\"}")
+	private Map<Language, String> updatedNameByLanguages;
 
-	@Schema(description = "Letra da música para cada idioma mapeado", example = "{\"BRAZILIAN_PORTUGUESE\": \"Por toda eternidade, eu vi sonhos vazios, sem nunca reclamar...\n\n...Tingido de anil...\",\"ENGLISH\": \"Unable to even have a shallow dream or grieve eternally...\n\n...Dyed in indigo...\"}")
-	private Map<Language, String> updatedLyrics;
+	@Schema(description = "Letra da música para cada idioma mapeado que foi atualizado", example = "{\"BRAZILIAN_PORTUGUESE\": \"Por toda eternidade, eu vi sonhos vazios, sem nunca reclamar...\n\n...Tingido de anil...\",\"ENGLISH\": \"Unable to even have a shallow dream or grieve eternally...\n\n...Dyed in indigo...\"}")
+	private Map<Language, String> updatedLyricByLanguages;
 	
 	@Schema(description = "Lista de nomes dos compositores", example = "[Mamiko Noto]")
 	private List<String> composersNames;

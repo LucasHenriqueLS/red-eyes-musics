@@ -20,7 +20,7 @@ public class Artist {
 	@Id
 	private String id;
 	
-	private String name;
+	private String name; // TODO Todos os nomes podem ser apenas uma lista.
 	
 	private List<String> otherNames;
 	
