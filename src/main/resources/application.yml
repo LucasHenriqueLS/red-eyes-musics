@@ -5,4 +5,4 @@ spring:
   data:
     mongodb:
 #      uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/UUUMusic?authSource=admin
-      uri: mongodb://localhost:27017/UUURedEyesMusics?authSource=admin
+      uri: mongodb://localhost:27017/uuu-red-eyes-musics?authSource=admin

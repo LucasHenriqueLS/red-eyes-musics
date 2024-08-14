@@ -1,0 +1,62 @@
+package br.com.uuu.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.uuu.converter.MusicConverter;
+import br.com.uuu.dto.error.exception.NotFoundException;
+import br.com.uuu.dto.input.music.MusicCreateInput;
+import br.com.uuu.dto.input.music.MusicUpdateInput;
+import br.com.uuu.mongodb.entity.Music;
+import br.com.uuu.mongodb.repository.MusicRepository;
+import br.com.uuu.mongodb.util.Genre;
+
+@Service
+public class MusicService {
+
+	@Autowired
+	private MusicRepository musicRepository;
+
+	@Autowired
+	private MusicConverter musicConverter;
+
+	@Autowired
+	private ArtistService artistService;
+
+	public List<Music> getAll() {
+		return musicRepository.findAll();
+	}
+
+	public Music getById(String musicId) {
+		return musicRepository.findById(musicId).orElseThrow(() -> new NotFoundException(musicId, "Música"));
+	}
+
+	public List<Music> getByArtistId(String artistId) {
+		return musicRepository.findByArtistId(artistId);
+	}
+
+	public List<Music> getByName(String musicName) {
+		return musicRepository.getByName(musicName);
+	}
+
+	public List<Music> getByGenre(Genre genre) {
+		return musicRepository.findByGenres(genre);
+	}
+
+	public Music save(MusicCreateInput input) {
+		var music = musicRepository.save(musicConverter.toEntity(input));
+		artistService.addMusicId(input.getArtistId(), music.getId());
+		return music;
+	}
+
+	public Music update(String musicId, MusicUpdateInput input) {
+		var music = getById(musicId);
+		return musicRepository.save(musicConverter.toUpdatedEntity(music, input));
+	}
+
+	public void delete(String musicId) {
+		musicRepository.deleteById(musicId);
+	}
+}
