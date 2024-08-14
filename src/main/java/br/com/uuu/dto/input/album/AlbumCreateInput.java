@@ -18,11 +18,11 @@ import lombok.ToString;
 @ToString
 public class AlbumCreateInput {
 
-	@NotBlank(message = "Informe o ID do artista")
+	@NotBlank(message = "não pode ser nulo ou vazio")
 	@Schema(description = "ID do artista", example = "64957a557f1d87179e9c77b9")
 	private String artistId;
 
-	@NotNull(message = "Informe o nome do álbum")
+	@NotNull(message = "não pode ser nulo")
 	@Schema(description = "Nome do álbum", example = "Temple of Love")
 	private String name;
 
@@ -33,11 +33,11 @@ public class AlbumCreateInput {
 	@Schema(description = "Nome da gravadora", example = "Sony Music")
 	private String recordCompanyName;
 
-	@NotNull(message = "Informe a lista de IDs de músicas para cada disco mapeado")
+	@NotNull(message = "não pode ser nulo")
 	@Schema(description = "Lista de IDs de músicas para cada disco mapeado", example = "{\"Disco 1\" : [\"64957c7eb0169b0599f68632\", \"64957c7eb0169b0599f68698\"]}")
 	private Map<String, List<String>> musicsIdsByDiskNames;
 
-	@NotBlank(message = "Informe o ID do usuário que está enviando o álbum")
+	@NotBlank(message = "não pode ser nulo ou vazio")
 	@Schema(description = "ID do usuário que está enviando o álbum", example = "64957a557f1d87179e9c77f9")
 	private String submitterId;
 }
