@@ -1,60 +1,75 @@
 package br.com.uuu.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import br.com.uuu.dto.input.album.AlbumCreateInput;
+import br.com.uuu.dto.input.album.AlbumUpdateInput;
+import br.com.uuu.service.AlbumService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("albums")
 public class AlbumController {
 
-//	@Autowired
-//	private MusicService musicService;
-//
-//	@GetMapping
-//	@Operation(description = "Recuperar todas as músicas")
-//	public List<Music> getAll() {
-//		return musicService.getAll();
-//	}
-//
-//	@GetMapping("get-by-id/{musicId}")
-//	@Operation(description = "Recuperar uma música pelo ID")
-//	public Music getById(@PathVariable String musicId) {
-//		return musicService.getById(musicId);
-//	}
-//
-//	@GetMapping("get-by-name/{musicName}")
-//	@Operation(description = "Recuperar músicas pelo nome")
-//	public List<Music> getByName(@PathVariable String musicName) {
-//		return musicService.getByName(musicName);
-//	}
-//
-//	@GetMapping("get-by-artist-id/{artistId}")
-//	@Operation(description = "Recuperar músicas pelo ID do artista")
-//	public List<Music> getByArtistId(@PathVariable String artistId) {
-//		return musicService.getByArtistId(artistId);
-//	}
-//
-//	@GetMapping("get-by-genre/{musicGenre}")
-//	@Operation(description = "Recuperar músicas pelo gênero")
-//	public List<Music> getByGenre(@PathVariable Genre musicGenre) {
-//		return musicService.getByGenre(musicGenre);
-//	}
-//
-//	@PostMapping
-//	@Operation(description = "Criar uma nova música")
-//	public Music save(@Valid @RequestBody MusicCreateInput input) {
-//		return musicService.save(input);
-//	}
-//
-//	@PutMapping("{musicId}")
-//	@Operation(description = "Atualizar uma música pelo ID")
-//	public Music update(@Valid @PathVariable String musicId, @Valid @RequestBody MusicUpdateInput input) {
-//		return musicService.update(musicId, input);
-//	}
-//
-//	@DeleteMapping("{musicId}")
-//	@Operation(description = "Deletar uma música pelo ID")
-//	public void delete(@Valid @PathVariable String musicId) {
-//		musicService.delete(musicId);
-//	}
+	@Autowired
+	private AlbumService albumService;
+
+	@GetMapping
+	@Operation(description = "Recupera todos os álbuns")
+	public ResponseEntity<?> getAll() {
+		return ResponseEntity.ok(albumService.getAll());
+	}
+
+	@GetMapping("get-by-id/{albumId}")
+	@Operation(description = "Recupera um álbum pelo ID")
+	public ResponseEntity<?> getById(@PathVariable String albumId) {
+		return ResponseEntity.ok(albumService.getById(albumId));
+	}
+
+	@GetMapping("get-by-name/{albumName}")
+	@Operation(description = "Recupera álbuns pelo nome")
+	public ResponseEntity<?> getByName(@PathVariable String albumName) {
+		return ResponseEntity.ok(albumService.getByName(albumName));
+	}
+
+	@GetMapping("get-by-artist-id/{artistId}")
+	@Operation(description = "Recupera álbuns pelo ID do artista")
+	public ResponseEntity<?> getByArtistId(@PathVariable String artistId) {
+		return ResponseEntity.ok(albumService.getByArtistId(artistId));
+	}
+
+	@GetMapping("get-by-music-id/{musicId}")
+	@Operation(description = "Recupera um álbum pelo ID da música")
+	public ResponseEntity<?> getByMusicId(@PathVariable String musicId) {
+		return ResponseEntity.ok(albumService.getByMusicId(musicId));
+	}
+
+	@PostMapping
+	@Operation(description = "Cria um novo álbum")
+	public ResponseEntity<?> save(@Valid @RequestBody AlbumCreateInput input) {
+		return ResponseEntity.ok(albumService.save(input));
+	}
+
+	@PutMapping("{albumId}")
+	@Operation(description = "Atualiza um álbum pelo ID")
+	public ResponseEntity<?> update(@Valid @PathVariable String albumId, @Valid @RequestBody AlbumUpdateInput input) {
+		return ResponseEntity.ok(albumService.update(albumId, input));
+	}
+
+	@DeleteMapping("{albumId}")
+	@Operation(description = "Deleta um álbum pelo ID")
+	public ResponseEntity<?> delete(@Valid @PathVariable String albumId) {
+		albumService.delete(albumId);
+		return ResponseEntity.ok().build();
+	}
 }
