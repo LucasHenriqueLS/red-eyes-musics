@@ -29,7 +29,7 @@ public class SongConverter {
 	public Song toEntity(SongCreateInput input) {
 		var song = new Song();
 
-		var artistIdsNotFound = artistService.getAllIdsNotIn(input.getArtistIds());
+		var artistIdsNotFound = artistService.getAllIdsNotFound(input.getArtistIds());
 		if (artistIdsNotFound.isEmpty()) {
 			song.setArtistIds(input.getArtistIds());
 		} else {

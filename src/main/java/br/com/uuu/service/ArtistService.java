@@ -56,7 +56,8 @@ public class ArtistService {
 //		mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(artistId)), update, Artist.class);
 //	}
 	
-	public List<String> getAllIdsNotIn(List<String> ids) {
-        return artistRepository.findAllByIdIn(ids).stream().map(ArtistIdDTO::getId).toList();
+	public List<String> getAllIdsNotFound(List<String> ids) {
+		var allIdsFound = artistRepository.findAllByIdIn(ids).stream().map(ArtistIdDTO::getId).toList();
+        return ids.stream().filter(id -> !allIdsFound.contains(id)).toList();
     }
 }
