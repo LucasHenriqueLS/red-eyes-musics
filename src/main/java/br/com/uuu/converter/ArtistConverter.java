@@ -10,8 +10,8 @@ public class ArtistConverter {
 
 	public Artist toEntity(ArtistInput input) {
 		var artist = new Artist();
-		artist.setName(input.getName());
-		artist.setOtherNames(input.getOtherNames());
+
+		artist.setNames(input.getNames());
 
 		return artist;
 	}

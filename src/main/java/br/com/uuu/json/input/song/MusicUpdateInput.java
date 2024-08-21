@@ -1,4 +1,4 @@
-package br.com.uuu.dto.input.music;
+package br.com.uuu.json.input.song;
 
 import java.util.List;
 import java.util.Map;

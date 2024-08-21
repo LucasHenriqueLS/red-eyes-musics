@@ -1,5 +1,6 @@
 package br.com.uuu.mongodb.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,17 +21,19 @@ public class Artist {
 	@Id
 	private String id;
 	
-	private String name; // TODO Todos os nomes podem ser apenas uma lista.
+	private List<String> names;
 	
-	private List<String> otherNames;
+	private String bio;
 	
-	private List<String> musicsIds;
+	private List<String> genreIds;
 	
-	private List<String> albumsIds;
+	private String imageUrl;
+	
+	private LocalDateTime createdAt;
 	
 	public Artist() {
-		otherNames = new ArrayList<>();
-		musicsIds = new ArrayList<>();
-		albumsIds = new ArrayList<>();
+		names = new ArrayList<>();
+		genreIds = new ArrayList<>();
 	}
+
 }

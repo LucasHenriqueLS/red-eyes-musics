@@ -1,4 +1,4 @@
-package br.com.uuu.dto.error.exception;
+package br.com.uuu.error.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

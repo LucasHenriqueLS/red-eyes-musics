@@ -1,4 +1,4 @@
-package br.com.uuu.dto.input.album;
+package br.com.uuu.json.input.album;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,11 +16,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AlbumUpdateInput {
+public class AlbumCreateInput {
 
+	@NotBlank(message = "não pode ser nulo ou vazio")
 	@Schema(description = "ID do artista", example = "64957a557f1d87179e9c77b9")
 	private String artistId;
 
+	@NotNull(message = "não pode ser nulo")
 	@Schema(description = "Nome do álbum", example = "Temple of Love")
 	private String name;
 
@@ -30,10 +33,11 @@ public class AlbumUpdateInput {
 	@Schema(description = "Nome da gravadora", example = "Sony Music")
 	private String recordCompanyName;
 
-	@Schema(description = "Lista de IDs de músicas para cada disco mapeado que foi atualizado", example = "{\"Disco 1\" : [\"64957c7eb0169b0599f68632\", \"64957c7eb0169b0599f68698\"]}")
-	private Map<String, List<String>> updatedMusicsIdsByDiskNames;
+	@NotNull(message = "não pode ser nulo")
+	@Schema(description = "Lista de IDs de músicas para cada disco mapeado", example = "{\"Disco 1\" : [\"64957c7eb0169b0599f68632\", \"64957c7eb0169b0599f68698\"]}")
+	private Map<String, List<String>> musicsIdsByDiskNames;
 
-	@NotBlank(message = "Informe o ID do usuário que está enviando uma revisão para o álbum")
-	@Schema(description = "ID do usuário que está enviando uma revisão para o álbum", example = "64957a557f1d87179e9c77f9")
-	private String proofreaderId;
+	@NotBlank(message = "não pode ser nulo ou vazio")
+	@Schema(description = "ID do usuário que está enviando o álbum", example = "64957a557f1d87179e9c77f9")
+	private String submitterId;
 }

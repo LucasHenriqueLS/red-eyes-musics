@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import br.com.uuu.mongodb.util.DetailsByLanguageCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,37 +19,37 @@ import lombok.ToString;
 @Setter
 @ToString
 
-@Document(collection = "albums")
-public class Album {
+@Document(collection = "songs")
+public class Song {
 
 	@Id
 	private String id;
 	
-	private String title;
-	
-	private LocalDate releaseDate;
-	
 	private List<String> artistIds;
 	
-	private String coverUrl;
+	private List<String> composerNames;
+	
+	private String albumId;
 	
 	private List<String> genreIds;
 	
-	private String recordCompanyName;
+	private String originalLanguageId;
 	
-//	private Map<String, List<String>> musicsIdsByDiskNames;
+	private Map<String, DetailsByLanguageCode> detailsByLanguageCode;
 	
-	private String submitterId;
+	private Integer durationInSeconds;
 	
-	private List<String> proofreadersIds;
+	private LocalDate releaseDate;
+	
+	private String videoLink;
 	
 	private LocalDateTime createdAt;
 	
-	public Album() {
+	public Song() {
 		artistIds = new ArrayList<>();
+		composerNames = new ArrayList<>();
 		genreIds = new ArrayList<>();
-//		musicsIdsByDiskNames = new LinkedHashMap<>();
-		proofreadersIds = new ArrayList<>();
+		detailsByLanguageCode = new LinkedHashMap<>();
 	}
 
 }

@@ -1,4 +1,4 @@
-package br.com.uuu.dto.error.handler;
+package br.com.uuu.error.handler;
 
 import java.util.HashMap;
 import java.util.Map;

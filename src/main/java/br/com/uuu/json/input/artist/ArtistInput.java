@@ -1,4 +1,4 @@
-package br.com.uuu.dto.input.artist;
+package br.com.uuu.json.input.artist;
 
 import java.util.List;
 
@@ -14,9 +14,6 @@ import lombok.ToString;
 public class ArtistInput {
 
 	@NotBlank(message = "não pode ser nulo ou vazio")
-	@Schema(description = "Nome do artista", example = "Mamiko Noto")
-	private String name;
-
-	@Schema(description = "Outros nomes do artista", example = "[\"Noto Mamiko\"]")
-	private List<String> otherNames;
+	@Schema(description = "Nomes do artista", example = "[\"Mamiko Noto\", \"Noto Mamiko\"]")
+	private List<String> names;
 }
