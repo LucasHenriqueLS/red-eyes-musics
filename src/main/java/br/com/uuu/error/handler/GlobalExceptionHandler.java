@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import br.com.uuu.error.exception.ErrorResponse;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -21,17 +23,20 @@ public class GlobalExceptionHandler {
             var errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return ResponseEntity.badRequest().body(errors);
+        var error = ErrorResponse.badRequest().setMessage(errors);
+        return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {
-        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+    	var error = ErrorResponse.status(ex.getStatusCode()).setMessage(ex.getReason());
+        return ResponseEntity.status(ex.getStatusCode()).body(error);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
-        return ResponseEntity.internalServerError().body("Um erro inesperado ocorreu: " + ex.getMessage());
+    	var error = ErrorResponse.internalServerError().setMessage(String.format("Um erro inesperado ocorreu: %s", ex.getMessage()));
+        return ResponseEntity.internalServerError().body(error);
     }
 
 }
