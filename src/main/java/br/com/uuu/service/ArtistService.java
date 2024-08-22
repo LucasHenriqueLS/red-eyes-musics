@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.uuu.converter.ArtistConverter;
 import br.com.uuu.json.dto.artist.ArtistIdDTO;
+import br.com.uuu.json.input.artist.ArtistCreateInput;
+import br.com.uuu.mongodb.entity.Artist;
 import br.com.uuu.mongodb.repository.ArtistRepository;
 
 @Service
@@ -14,9 +17,9 @@ public class ArtistService {
 	@Autowired
 	private ArtistRepository artistRepository;
 
-//	@Autowired
-//	private ArtistConverter artistConverter;
-//
+	@Autowired
+	private ArtistConverter artistConverter;
+
 //	@Autowired
 //	private MongoTemplate mongoTemplate;
 
@@ -27,11 +30,11 @@ public class ArtistService {
 //	public Artist getById(String artistId) {
 //		return artistRepository.findById(artistId).orElseThrow(() -> new NotFoundException(artistId, "Artista"));
 //	}
-//
-//	public Artist save(ArtistInput input) {
-//		return artistRepository.save(artistConverter.toEntity(input));
-//	}
-//
+
+	public Artist save(ArtistCreateInput input) {
+		return artistRepository.save(artistConverter.toEntity(input));
+	}
+
 //	public Boolean existsById(String artistId) {
 //		return artistRepository.existsById(artistId);
 //	}
@@ -57,7 +60,7 @@ public class ArtistService {
 //	}
 	
 	public List<String> getAllIdsNotFound(List<String> ids) {
-		var allIdsFound = artistRepository.findAllByIdIn(ids).stream().map(ArtistIdDTO::getId).toList();
+		var allIdsFound = artistRepository.findAllByIdIn(ids).stream().map(ArtistIdDTO::id).toList();
         return ids.stream().filter(id -> !allIdsFound.contains(id)).toList();
     }
 }

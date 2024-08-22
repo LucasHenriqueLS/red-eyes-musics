@@ -23,7 +23,7 @@ public class SongCreateInput {
 	@Schema(description = "IDs dos artistas", example = "[\"64957a557f1d87179e9c77b9\", \"95f1d87179e7a54579c77b96\"]")
 	private List<String> artistIds;
 
-	@Schema(description = "Lista de nomes dos compositores", example = "[\"Mamiko Noto\"]")
+	@Schema(description = "Nomes dos compositores", example = "[\"Mamiko Noto\"]")
 	private List<String> composerNames;
 
 	@Schema(description = "ID do álbum", example = "17b959647ad87179e9c7557f")

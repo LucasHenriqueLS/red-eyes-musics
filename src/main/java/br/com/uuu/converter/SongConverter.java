@@ -51,7 +51,7 @@ public class SongConverter {
 			}			
 		}
 		
-		var genreIdsNotFound = genreService.getAllIdsNotIn(input.getGenreIds());
+		var genreIdsNotFound = genreService.getAllIdsNotFound(input.getGenreIds());
 		if (genreIdsNotFound.isEmpty()) {
 			song.setGenreIds(input.getGenreIds());
 		} else {

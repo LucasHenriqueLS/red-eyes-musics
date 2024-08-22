@@ -1,7 +1,5 @@
 package br.com.uuu.mongodb.entity;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,7 +20,5 @@ public class Genre {
 	private String name;
 	
 	private String description;
-	
-	private LocalDateTime createdAt;
 
 }

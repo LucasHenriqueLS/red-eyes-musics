@@ -1,6 +1,5 @@
 package br.com.uuu.mongodb.entity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +27,7 @@ public class Artist {
 	private List<String> genreIds;
 	
 	private String imageUrl;
-	
-	private LocalDateTime createdAt;
-	
+
 	public Artist() {
 		names = new ArrayList<>();
 		genreIds = new ArrayList<>();

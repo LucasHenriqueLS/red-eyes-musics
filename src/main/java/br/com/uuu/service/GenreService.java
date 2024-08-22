@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.uuu.converter.GenreConverter;
 import br.com.uuu.json.dto.genre.GenreIdDTO;
+import br.com.uuu.json.input.genre.GenreCreateInput;
+import br.com.uuu.mongodb.entity.Genre;
 import br.com.uuu.mongodb.repository.GenreRepository;
 
 @Service
@@ -14,8 +17,16 @@ public class GenreService {
 	@Autowired
 	private GenreRepository genreRepository;
 	
-	public List<String> getAllIdsNotIn(List<String> ids) {
-        return genreRepository.findAllByIdIn(ids).stream().map(GenreIdDTO::getId).toList();
+	@Autowired
+	private GenreConverter genreConverter;
+	
+	public Genre save(GenreCreateInput input) {
+		return genreRepository.save(genreConverter.toEntity(input));
+	}
+	
+	public List<String> getAllIdsNotFound(List<String> ids) {
+		var allIdsFound = genreRepository.findAllByIdIn(ids).stream().map(GenreIdDTO::id).toList();
+        return ids.stream().filter(id -> !allIdsFound.contains(id)).toList();
     }
 
 }

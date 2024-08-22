@@ -1,11 +1,8 @@
 package br.com.uuu.mongodb.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -35,20 +32,10 @@ public class Album {
 	private List<String> genreIds;
 	
 	private String recordCompanyName;
-	
-//	private Map<String, List<String>> musicsIdsByDiskNames;
-	
-	private String submitterId;
-	
-	private List<String> proofreadersIds;
-	
-	private LocalDateTime createdAt;
-	
+
 	public Album() {
 		artistIds = new ArrayList<>();
 		genreIds = new ArrayList<>();
-//		musicsIdsByDiskNames = new LinkedHashMap<>();
-		proofreadersIds = new ArrayList<>();
 	}
 
 }
