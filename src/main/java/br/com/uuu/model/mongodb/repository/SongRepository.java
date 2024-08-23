@@ -1,11 +1,11 @@
-package br.com.uuu.mongodb.repository;
+package br.com.uuu.model.mongodb.repository;
 
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import br.com.uuu.mongodb.entity.Song;
+import br.com.uuu.model.mongodb.entity.Song;
 
 public interface SongRepository extends MongoRepository<Song, String> {
 

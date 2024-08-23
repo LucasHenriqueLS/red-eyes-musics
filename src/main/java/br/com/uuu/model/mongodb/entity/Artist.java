@@ -1,6 +1,5 @@
-package br.com.uuu.mongodb.entity;
+package br.com.uuu.model.mongodb.entity;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,26 +14,22 @@ import lombok.ToString;
 @Setter
 @ToString
 
-@Document(collection = "albums")
-public class Album {
+@Document(collection = "artists")
+public class Artist {
 
 	@Id
 	private String id;
 	
-	private String title;
+	private List<String> names;
 	
-	private LocalDate releaseDate;
-	
-	private List<String> artistIds;
-	
-	private String coverUrl;
+	private String bio;
 	
 	private List<String> genreIds;
 	
-	private String recordCompanyName;
+	private String imageUrl;
 
-	public Album() {
-		artistIds = new ArrayList<>();
+	public Artist() {
+		names = new ArrayList<>();
 		genreIds = new ArrayList<>();
 	}
 

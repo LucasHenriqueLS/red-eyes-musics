@@ -1,4 +1,4 @@
-package br.com.uuu.mongodb.util;
+package br.com.uuu.model.mongodb.util;
 
 public enum AlbumType {
 	

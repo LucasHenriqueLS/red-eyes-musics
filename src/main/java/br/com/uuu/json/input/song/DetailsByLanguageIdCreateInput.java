@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class DetailsByLanguageCodeCreateInput {
+public class DetailsByLanguageIdCreateInput {
 
 	@NotBlank(message = "não pode ser nulo ou vazio")
 	@Schema(description = "Título da música para o código do idioma", example = "Aizome")

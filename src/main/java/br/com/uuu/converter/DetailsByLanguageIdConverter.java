@@ -2,14 +2,14 @@ package br.com.uuu.converter;
 
 import org.springframework.stereotype.Component;
 
-import br.com.uuu.json.input.song.DetailsByLanguageCodeCreateInput;
-import br.com.uuu.mongodb.util.DetailsByLanguageCode;
+import br.com.uuu.json.input.song.DetailsByLanguageIdCreateInput;
+import br.com.uuu.model.mongodb.util.DetailsByLanguageId;
 
 @Component
-public class DetailsByLanguageConverter {
+public class DetailsByLanguageIdConverter {
 
-	public DetailsByLanguageCode toEntity(DetailsByLanguageCodeCreateInput input) {
-		var detailsByLanguageCode = new DetailsByLanguageCode();
+	public DetailsByLanguageId toEntity(DetailsByLanguageIdCreateInput input) {
+		var detailsByLanguageCode = new DetailsByLanguageId();
 
 		detailsByLanguageCode.setTitle(input.getTitle());
 		detailsByLanguageCode.setLyric(input.getLyric());

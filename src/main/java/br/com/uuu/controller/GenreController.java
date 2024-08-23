@@ -2,6 +2,7 @@ package br.com.uuu.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,12 @@ public class GenreController {
 
 	@Autowired
 	private GenreService genreService;
+	
+	@GetMapping
+	@Operation(description = "Recupera todos os gêneros")
+	public ResponseEntity<?> getAll() {
+		return ResponseEntity.ok(genreService.getAll());
+	}
 
 	@PostMapping
 	@Operation(description = "Cria um novo gênero")

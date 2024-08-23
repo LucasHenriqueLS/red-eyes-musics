@@ -1,4 +1,4 @@
-package br.com.uuu.mongodb.entity;
+package br.com.uuu.model.mongodb.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import br.com.uuu.mongodb.util.DetailsByLanguageCode;
+import br.com.uuu.model.mongodb.util.DetailsByLanguageId;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,7 +34,7 @@ public class Song {
 	
 	private String originalLanguageId;
 	
-	private Map<String, DetailsByLanguageCode> detailsByLanguageCode;
+	private Map<String, DetailsByLanguageId> detailsByLanguageId;
 	
 	private Integer durationInSeconds;
 	
@@ -46,7 +46,7 @@ public class Song {
 		artistIds = new ArrayList<>();
 		composerNames = new ArrayList<>();
 		genreIds = new ArrayList<>();
-		detailsByLanguageCode = new LinkedHashMap<>();
+		detailsByLanguageId = new LinkedHashMap<>();
 	}
 
 }

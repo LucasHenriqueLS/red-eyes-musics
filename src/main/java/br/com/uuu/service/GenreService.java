@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import br.com.uuu.converter.GenreConverter;
 import br.com.uuu.json.dto.genre.GenreIdDTO;
 import br.com.uuu.json.input.genre.GenreCreateInput;
-import br.com.uuu.mongodb.entity.Genre;
-import br.com.uuu.mongodb.repository.GenreRepository;
+import br.com.uuu.model.mongodb.entity.Genre;
+import br.com.uuu.model.mongodb.repository.GenreRepository;
 
 @Service
 public class GenreService {
@@ -19,7 +19,11 @@ public class GenreService {
 	
 	@Autowired
 	private GenreConverter genreConverter;
-	
+
+	public List<Genre> getAll() {
+		return genreRepository.findAll();
+	}
+
 	public Genre save(GenreCreateInput input) {
 		return genreRepository.save(genreConverter.toEntity(input));
 	}

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.uuu.json.input.song.SongCreateInput;
-import br.com.uuu.mongodb.entity.Song;
+import br.com.uuu.model.mongodb.entity.Song;
 import br.com.uuu.service.AlbumService;
 import br.com.uuu.service.ArtistService;
 import br.com.uuu.service.GenreService;
@@ -24,7 +24,7 @@ public class SongConverter {
 	private GenreService genreService;
 	
 	@Autowired
-	private DetailsByLanguageConverter detailsByLanguageConverter;
+	private DetailsByLanguageIdConverter detailsByLanguageIdConverter;
 	
 	public Song toEntity(SongCreateInput input) {
 		var song = new Song();
@@ -60,8 +60,8 @@ public class SongConverter {
 
 		song.setOriginalLanguageId(input.getOriginalLanguageId());
 		
-		input.getDetailsByLanguageCode().forEach((language, details) ->  {
-			song.getDetailsByLanguageCode().put(language, detailsByLanguageConverter.toEntity(details));
+		input.getDetailsByLanguageId().forEach((language, details) ->  {
+			song.getDetailsByLanguageId().put(language, detailsByLanguageIdConverter.toEntity(details));
 		});
 
 		song.setDurationInSeconds(input.getDurationInSeconds());

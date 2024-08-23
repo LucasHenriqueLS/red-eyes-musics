@@ -8,32 +8,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.uuu.json.input.artist.ArtistCreateInput;
-import br.com.uuu.service.ArtistService;
+import br.com.uuu.json.input.language.LanguageCreateInput;
+import br.com.uuu.service.LanguageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("artists")
-public class ArtistController {
+@RequestMapping("languages")
+public class LanguageController {
 
 	@Autowired
-	private ArtistService artistService;
-
+	private LanguageService languageService;
+	
 	@GetMapping
-	@Operation(description = "Recupera todos os artistas")
+	@Operation(description = "Recupera todos os idiomas")
 	public ResponseEntity<?> getAll() {
-		return ResponseEntity.ok(artistService.getAll());
+		return ResponseEntity.ok(languageService.getAll());
 	}
-
-//	@GetMapping("get-by-id/{artistId}")
-//	public Artist getById(@PathVariable String artistId) {
-//		return artistService.getById(artistId);
-//	}
 
 	@PostMapping
-	@Operation(description = "Cria um novo artista")
-	public ResponseEntity<?> save(@Valid @RequestBody ArtistCreateInput input) {
-		return ResponseEntity.ok(artistService.save(input));
+	@Operation(description = "Cria um novo idioma")
+	public ResponseEntity<?> save(@Valid @RequestBody LanguageCreateInput input) {
+		return ResponseEntity.ok(languageService.save(input));
 	}
+
 }

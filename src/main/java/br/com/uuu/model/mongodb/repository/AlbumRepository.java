@@ -1,11 +1,11 @@
-package br.com.uuu.mongodb.repository;
+package br.com.uuu.model.mongodb.repository;
 
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import br.com.uuu.mongodb.entity.Album;
+import br.com.uuu.model.mongodb.entity.Album;
 
 public interface AlbumRepository extends MongoRepository<Album, String> {
 

@@ -1,4 +1,4 @@
-package br.com.uuu.mongodb.util;
+package br.com.uuu.model.mongodb.util;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class DetailsByLanguageCode {
+public class DetailsByLanguageId {
 
 	private String title;
 	

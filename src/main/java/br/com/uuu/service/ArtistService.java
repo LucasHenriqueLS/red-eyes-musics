@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import br.com.uuu.converter.ArtistConverter;
 import br.com.uuu.json.dto.artist.ArtistIdDTO;
 import br.com.uuu.json.input.artist.ArtistCreateInput;
-import br.com.uuu.mongodb.entity.Artist;
-import br.com.uuu.mongodb.repository.ArtistRepository;
+import br.com.uuu.model.mongodb.entity.Artist;
+import br.com.uuu.model.mongodb.repository.ArtistRepository;
 
 @Service
 public class ArtistService {
@@ -23,10 +23,10 @@ public class ArtistService {
 //	@Autowired
 //	private MongoTemplate mongoTemplate;
 
-//	public List<Artist> getAll() {
-//		return artistRepository.findAll();
-//	}
-//
+	public List<Artist> getAll() {
+		return artistRepository.findAll();
+	}
+
 //	public Artist getById(String artistId) {
 //		return artistRepository.findById(artistId).orElseThrow(() -> new NotFoundException(artistId, "Artista"));
 //	}

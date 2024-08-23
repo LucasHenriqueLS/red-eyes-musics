@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.uuu.json.input.artist.ArtistCreateInput;
-import br.com.uuu.mongodb.entity.Artist;
+import br.com.uuu.model.mongodb.entity.Artist;
 import br.com.uuu.service.GenreService;
 
 @Component

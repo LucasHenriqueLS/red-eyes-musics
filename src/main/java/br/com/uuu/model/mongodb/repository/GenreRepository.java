@@ -1,11 +1,11 @@
-package br.com.uuu.mongodb.repository;
+package br.com.uuu.model.mongodb.repository;
 
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import br.com.uuu.json.dto.genre.GenreIdDTO;
-import br.com.uuu.mongodb.entity.Genre;
+import br.com.uuu.model.mongodb.entity.Genre;
 
 public interface GenreRepository extends MongoRepository<Genre, String> {
 

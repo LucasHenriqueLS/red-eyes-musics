@@ -1,6 +1,4 @@
-package br.com.uuu.mongodb.entity;
-
-import java.time.LocalDateTime;
+package br.com.uuu.model.mongodb.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,7 +20,5 @@ public class Language {
 	private String code;
 	
 	private String name;
-	
-	private LocalDateTime createdAt;
 
 }

@@ -1,4 +1,4 @@
-package br.com.uuu.mongodb.entity;
+package br.com.uuu.model.mongodb.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

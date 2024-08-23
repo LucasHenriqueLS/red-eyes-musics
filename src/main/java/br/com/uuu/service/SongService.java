@@ -1,12 +1,14 @@
 package br.com.uuu.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.uuu.converter.SongConverter;
 import br.com.uuu.json.input.song.SongCreateInput;
-import br.com.uuu.mongodb.entity.Song;
-import br.com.uuu.mongodb.repository.SongRepository;
+import br.com.uuu.model.mongodb.entity.Song;
+import br.com.uuu.model.mongodb.repository.SongRepository;
 
 @Service
 public class SongService {
@@ -20,9 +22,9 @@ public class SongService {
 //	@Autowired
 //	private ArtistService artistService;
 
-//	public List<Song> getAll() {
-//		return songRepository.findAll();
-//	}
+	public List<Song> getAll() {
+		return songRepository.findAll();
+	}
 //
 //	public Song getById(String musicId) {
 //		return songRepository.findById(musicId).orElseThrow(() -> new NotFoundException(musicId, "Música"));

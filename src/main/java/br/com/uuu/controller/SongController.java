@@ -2,6 +2,7 @@ package br.com.uuu.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +20,12 @@ public class SongController {
 	@Autowired
 	private SongService songService;
 
-//	@GetMapping
-//	@Operation(description = "Recuperar todas as músicas")
-//	public List<Song> getAll() {
-//		return songService.getAll();
-//	}
-//
+	@GetMapping
+	@Operation(description = "Recupera todas as músicas")
+	public ResponseEntity<?> getAll() {
+		return ResponseEntity.ok(songService.getAll());
+	}
+
 //	@GetMapping("get-by-id/{musicId}")
 //	@Operation(description = "Recuperar uma música pelo ID")
 //	public Song getById(@PathVariable String musicId) {

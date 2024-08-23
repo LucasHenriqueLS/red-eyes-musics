@@ -38,8 +38,8 @@ public class SongCreateInput {
 	private String originalLanguageId;
 
 	@NotNull(message = "não pode ser nulo")
-	@Schema(description = "Detalhes da música para cada código de idioma mapeado", example = "{\"ja_JP\" : {\"title\" : \"Aizome\", \"lyric\" : \"Asaki yumemiji towa ni nageki mo sesu...\\n\\n...Ai ni somete...\", \"submitterId\" : \"64957a557f1d87179e9c77f9\"}}")
-	private Map<String, DetailsByLanguageCodeCreateInput> detailsByLanguageCode;
+	@Schema(description = "Detalhes da música para cada ID de idioma mapeado", example = "{\"66c8b94ff5249d656c735e3a\" : {\"title\" : \"Aizome\", \"lyric\" : \"Asaki yumemiji towa ni nageki mo sesu...\\n\\n...Ai ni somete...\", \"submitterId\" : \"64957a557f1d87179e9c77f9\"}}")
+	private Map<String, DetailsByLanguageIdCreateInput> detailsByLanguageId;
 
 	@Positive(message = "deve ser maior que zero")
 	@Schema(description = "Duração da música em segundos", example = "300")
