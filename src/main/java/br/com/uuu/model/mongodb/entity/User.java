@@ -23,7 +23,7 @@ public class User {
 	
 	private String email;
 	
-	private String passwordHash;
+	private String password;
 	
 	private String profileImageUrl;
 	

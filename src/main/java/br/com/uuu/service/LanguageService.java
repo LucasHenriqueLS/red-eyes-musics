@@ -27,4 +27,8 @@ public class LanguageService {
 		return languageRepository.save(languageConverter.toEntity(input));
 	}
 
+	public Boolean existsById(String id) {
+		return languageRepository.existsById(id);
+	}
+
 }

@@ -10,6 +10,7 @@ import br.com.uuu.model.mongodb.entity.Song;
 import br.com.uuu.service.AlbumService;
 import br.com.uuu.service.ArtistService;
 import br.com.uuu.service.GenreService;
+import br.com.uuu.service.LanguageService;
 
 @Component
 public class SongConverter {
@@ -22,6 +23,9 @@ public class SongConverter {
 	
 	@Autowired
 	private GenreService genreService;
+	
+	@Autowired
+	private LanguageService languageService;
 	
 	@Autowired
 	private DetailsByLanguageIdConverter detailsByLanguageIdConverter;
@@ -57,9 +61,16 @@ public class SongConverter {
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Gêneros com os IDs %s não foram encontrados", genreIdsNotFound));
 		}
-
-		song.setOriginalLanguageId(input.getOriginalLanguageId());
 		
+		var languageId = input.getOriginalLanguageId();
+		if (languageId != null) {
+			if (languageService.existsById(languageId)) {
+				song.setOriginalLanguageId(input.getOriginalLanguageId());
+			} else {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Idioma com o ID %s não foi encontrado", languageId));
+			}			
+		}
+
 		input.getDetailsByLanguageId().forEach((language, details) ->  {
 			song.getDetailsByLanguageId().put(language, detailsByLanguageIdConverter.toEntity(details));
 		});
