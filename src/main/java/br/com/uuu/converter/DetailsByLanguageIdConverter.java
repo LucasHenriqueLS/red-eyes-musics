@@ -21,6 +21,12 @@ public class DetailsByLanguageIdConverter {
 		detailsByLanguageCode.setTitle(input.getTitle());
 		detailsByLanguageCode.setLyric(input.getLyric());
 
+		setSubmitterIfIsValid(input, detailsByLanguageCode);
+
+		return detailsByLanguageCode;
+	}
+
+	private void setSubmitterIfIsValid(DetailsByLanguageIdCreateInput input, DetailsByLanguageId detailsByLanguageCode) {
 		var submitterId = input.getSubmitterId();
 		if (submitterId != null) {
 			if (userService.existsById(submitterId)) {
@@ -29,8 +35,6 @@ public class DetailsByLanguageIdConverter {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Usuário com o ID %s não foi encontrado", submitterId));
 			}			
 		}
-
-		return detailsByLanguageCode;
 	}
 
 }

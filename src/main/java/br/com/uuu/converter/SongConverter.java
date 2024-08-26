@@ -33,43 +33,15 @@ public class SongConverter {
 	public Song toEntity(SongCreateInput input) {
 		var song = new Song();
 
-		var artistIdsNotFound = artistService.getAllIdsNotFound(input.getArtistIds());
-		if (artistIdsNotFound.isEmpty()) {
-			song.setArtistIds(input.getArtistIds());
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Artistas com os IDs %s não foram encontrados", artistIdsNotFound));
-		}
+		setArtistsIfIsValid(input, song);
 
-		if (input.getComposerNames() != null && !input.getComposerNames().isEmpty()) {
-			song.setComposerNames(input.getComposerNames());			
-		} else {
-			song.getComposerNames().add("Desconhecido");
-		}
+		setComposerNamesIfIsValid(input, song);
 
-		var albumId = input.getAlbumId();
-		if (albumId != null) {
-			if (albumService.existsById(albumId)) {
-				song.setAlbumId(albumId);
-			} else {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Álbum com o ID %s não foi encontrado", albumId));
-			}			
-		}
+		setAlbumIfIsValid(input, song);
 		
-		var genreIdsNotFound = genreService.getAllIdsNotFound(input.getGenreIds());
-		if (genreIdsNotFound.isEmpty()) {
-			song.setGenreIds(input.getGenreIds());
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Gêneros com os IDs %s não foram encontrados", genreIdsNotFound));
-		}
+		setGenresIfIsValid(input, song);
 		
-		var languageId = input.getOriginalLanguageId();
-		if (languageId != null) {
-			if (languageService.existsById(languageId)) {
-				song.setOriginalLanguageId(input.getOriginalLanguageId());
-			} else {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Idioma com o ID %s não foi encontrado", languageId));
-			}			
-		}
+		setOriginalLanguageIfIsValid(input, song);
 
 		input.getDetailsByLanguageId().forEach((language, details) ->  {
 			song.getDetailsByLanguageId().put(language, detailsByLanguageIdConverter.toEntity(details));
@@ -80,6 +52,54 @@ public class SongConverter {
 		song.setVideoLink(input.getVideoLink());
 
 		return song;
+	}
+
+	private void setArtistsIfIsValid(SongCreateInput input, Song song) {
+		var artistIdsNotFound = artistService.getAllIdsNotFound(input.getArtistIds());
+		if (artistIdsNotFound.isEmpty()) {
+			song.setArtistIds(input.getArtistIds());
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Artistas com os IDs %s não foram encontrados", artistIdsNotFound));
+		}
+	}
+
+	private void setComposerNamesIfIsValid(SongCreateInput input, Song song) {
+		if (input.getComposerNames() != null && !input.getComposerNames().isEmpty()) {
+			song.setComposerNames(input.getComposerNames());			
+		} else {
+			song.getComposerNames().add("Desconhecido");
+		}
+	}
+
+	private void setAlbumIfIsValid(SongCreateInput input, Song song) {
+		var albumId = input.getAlbumId();
+		if (albumId != null) {
+			if (albumService.existsById(albumId)) {
+				song.setAlbumId(albumId);
+			} else {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Álbum com o ID %s não foi encontrado", albumId));
+			}			
+		}
+	}
+
+	private void setGenresIfIsValid(SongCreateInput input, Song song) {
+		var genreIdsNotFound = genreService.getAllIdsNotFound(input.getGenreIds());
+		if (genreIdsNotFound.isEmpty()) {
+			song.setGenreIds(input.getGenreIds());
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Gêneros com os IDs %s não foram encontrados", genreIdsNotFound));
+		}
+	}
+
+	private void setOriginalLanguageIfIsValid(SongCreateInput input, Song song) {
+		var languageId = input.getOriginalLanguageId();
+		if (languageId != null) {
+			if (languageService.existsById(languageId)) {
+				song.setOriginalLanguageId(input.getOriginalLanguageId());
+			} else {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Idioma com o ID %s não foi encontrado", languageId));
+			}			
+		}
 	}
 	
 //	public Song toUpdatedEntity(Song music, MusicUpdateInput input) {

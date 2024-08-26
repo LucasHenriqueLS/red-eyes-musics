@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.uuu.converter.LanguageConverter;
-import br.com.uuu.json.input.language.LanguageCreateInput;
 import br.com.uuu.model.mongodb.entity.Language;
 import br.com.uuu.model.mongodb.repository.LanguageRepository;
 
@@ -15,16 +13,13 @@ public class LanguageService {
 
 	@Autowired
 	private LanguageRepository languageRepository;
-	
-	@Autowired
-	private LanguageConverter languageConverter;
 
 	public List<Language> getAll() {
 		return languageRepository.findAll();
 	}
 
-	public Language save(LanguageCreateInput input) {
-		return languageRepository.save(languageConverter.toEntity(input));
+	public Language save(Language language) {
+		return languageRepository.save(language);
 	}
 
 	public Boolean existsById(String id) {
