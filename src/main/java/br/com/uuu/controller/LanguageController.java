@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,12 @@ public class LanguageController {
 	@Operation(description = "Recupera todos os idiomas")
 	public ResponseEntity<?> getAll() {
 		return ResponseEntity.ok(languageConverter.toOutput(languageService.getAll()));
+	}
+
+	@GetMapping("get-by-id/{id}")
+	@Operation(description = "Recupera um idioma pelo ID")
+	public ResponseEntity<?> getById(@PathVariable String id) {
+		return ResponseEntity.ok(languageConverter.toOutput(languageService.getById(id)));
 	}
 
 	@PostMapping

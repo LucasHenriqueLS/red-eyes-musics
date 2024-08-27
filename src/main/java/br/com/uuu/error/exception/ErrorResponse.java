@@ -23,6 +23,12 @@ public class ErrorResponse {
         this.timestamp = LocalDateTime.now();
     }
     
+    public ErrorResponse(Integer status, Object message) {
+        this.status = status;
+        this.message = message;
+        this.timestamp = LocalDateTime.now();
+    }
+    
     public static ErrorResponse status(HttpStatusCode statusCode) {
     	return new ErrorResponse(statusCode.value());
     }
@@ -31,6 +37,18 @@ public class ErrorResponse {
     	return new ErrorResponse(HttpStatus.BAD_REQUEST.value());
     }
     
+    public static ErrorResponse badRequest(Object message) {
+    	return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
+    }
+    
+    public static ErrorResponse notFound() {
+    	return new ErrorResponse(HttpStatus.NOT_FOUND.value());
+    }
+
+    public static ErrorResponse notFound(Object message) {
+    	return new ErrorResponse(HttpStatus.NOT_FOUND.value(), message);
+    }
+
     public static ErrorResponse internalServerError() {
     	return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
