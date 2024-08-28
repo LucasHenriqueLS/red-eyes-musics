@@ -6,18 +6,24 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import br.com.uuu.json.input.language.LanguageCreateInput;
+import br.com.uuu.json.input.language.LanguageUpdateInput;
 import br.com.uuu.json.output.language.LanguageOutput;
 import br.com.uuu.model.mongodb.entity.Language;
 
 @Component
 public class LanguageConverter {
 	
-	public Language toEntity(LanguageCreateInput input) {
-		var language = new Language();
-
+	public Language toEntity(Language language, LanguageCreateInput input) {
 		language.setCode(input.getCode());
 		language.setName(input.getName());
 
+		return language;
+	}
+	
+	public Language toEntity(Language language, LanguageUpdateInput input) {
+		input.getCode().ifPresent(language::setCode);
+		input.getName().ifPresent(language::setName);
+		
 		return language;
 	}
 	
