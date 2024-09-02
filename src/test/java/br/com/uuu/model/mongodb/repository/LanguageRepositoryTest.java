@@ -53,7 +53,7 @@ class LanguageRepositoryTest {
 		return languageRepository.findAll();
 	}
 
-	private void saveLanguage(Language language) {
+	private void save(Language language) {
 		languageRepository.save(language);
 	}
 	
@@ -64,7 +64,7 @@ class LanguageRepositoryTest {
 	@Test
     void whenSave_thenLanguageIsSaved() {
 		for (var language : languages) {
-			saveLanguage(language);
+			save(language);
 			assertThat(language.getId()).isNotBlank();
 		}
     }
@@ -72,7 +72,7 @@ class LanguageRepositoryTest {
     @Test
     void whenFindById_thenReturnLanguage() {
     	for (var language : languages) {
-    		saveLanguage(language);
+    		save(language);
     		var optional = findById(language.getId());
     		assertThat(optional).isPresent();
     		optional.ifPresent(entity -> {
@@ -90,7 +90,7 @@ class LanguageRepositoryTest {
     @Test
 	void whenFindAll_thenReturnAllLanguages() {
     	for (var language : languages) {
-    		saveLanguage(language);
+    		save(language);
     	}
 	    var allLanguages = findAll();
 	    assertThat(allLanguages).hasSize(languages.size());
@@ -102,7 +102,7 @@ class LanguageRepositoryTest {
     @Test
     void whenDeleteById_thenLanguageIsDeleted() {
     	for (var language : languages) {
-    		saveLanguage(language);
+    		save(language);
     		deleteById(language.getId());
     		var optional = findById(language.getId());
     		assertThat(optional).isNotPresent();

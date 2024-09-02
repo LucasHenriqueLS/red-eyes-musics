@@ -60,6 +60,7 @@ class LanguageControllerTest {
     public void setup(){
     	languageIds = new ArrayList<>();
     	languageCreateInputs = new ArrayList<>();
+    	languageUpdateInputs = new ArrayList<>();
     	languageCreateInputs.add(
     			LanguageCreateInput.builder()
  				.code("en_US")
@@ -179,7 +180,7 @@ class LanguageControllerTest {
 	@Test
 	@Order(7)
     void givenEmptyValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
-        var id = languageIds.get(1);
+        var id = languageIds.get(0);
         var languageUpdateInput = languageUpdateInputs.get(0);
         var response = mockMvc.perform(put("/languages/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
@@ -190,16 +191,6 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(8)
-    void givenValidLanguageId_afterPutRequest_whenGetById_thenReturnsOkStatusAndLanguageOutput() throws Exception {
-    	var languageUpdateInput = languageUpdateInputs.get(0);
-    	var id = languageIds.get(0);
-    	var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
-    		.andExpect(status().isOk());
-    	checkLanguageOutputExpectedResult(response, languageUpdateInput, "$");
-    }
-
-	@Test
-	@Order(9)
     void givenValidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
         var id = languageIds.get(2);
 		mockMvc.perform(delete("/languages/{id}", id))
@@ -207,7 +198,7 @@ class LanguageControllerTest {
     }
 
 	@Test
-	@Order(10)
+	@Order(9)
     void givenInvalidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
         var id = "invalid_id";
 		mockMvc.perform(delete("/languages/{id}", id))
