@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,6 +32,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import br.com.uuu.error.exception.ErrorResponse;
 import br.com.uuu.json.input.language.LanguageCreateInput;
+import br.com.uuu.json.input.language.LanguageUpdateInput;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,6 +53,8 @@ class LanguageControllerTest {
 	private List<String> languageIds;
 	
 	private List<LanguageCreateInput> languageCreateInputs;
+	
+	private List<LanguageUpdateInput> languageUpdateInputs;
 
     @BeforeAll
     public void setup(){
@@ -71,6 +75,11 @@ class LanguageControllerTest {
  				.code("ja_JP")
  				.name("Japonês")
  				.build());
+    	languageUpdateInputs.add(
+    			LanguageUpdateInput.builder()
+        		.code(Optional.of("en_GB"))
+        		.name(Optional.of("Inglês Britânico"))
+        		.build());
     }
     
     private void checkLanguageOutputExpectedResult(ResultActions response, LanguageCreateInput languageCreateInput, String jsonPath) throws Exception {
@@ -78,6 +87,13 @@ class LanguageControllerTest {
     	.andExpect(jsonPath(String.format("%s.id", jsonPath)).isNotEmpty())
         .andExpect(jsonPath(String.format("%s.code", jsonPath)).value(languageCreateInput.getCode()))
         .andExpect(jsonPath(String.format("%s.name", jsonPath)).value(languageCreateInput.getName()));
+    }
+    
+    private void checkLanguageOutputExpectedResult(ResultActions response, LanguageUpdateInput languageCreateInput, String jsonPath) throws Exception {
+    	response
+    	.andExpect(jsonPath(String.format("%s.id", jsonPath)).isNotEmpty())
+        .andExpect(jsonPath(String.format("%s.code", jsonPath)).value(languageCreateInput.getCode().get()))
+        .andExpect(jsonPath(String.format("%s.name", jsonPath)).value(languageCreateInput.getName().get()));
     }
 
     private void checkErrorResponseExpectedResult(ResultActions response, ErrorResponse errorResponse, String jsonPath) throws Exception {
@@ -89,7 +105,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(1)
-	void givenValidLanguageInput_whenPostRequest_shouldReturnsCreatedStatusAndLanguageDetails() throws Exception {
+	void givenValidLanguageCreateInput_whenPostRequest_thenReturnsCreatedStatusAndLanguageOutput() throws Exception {
 		for (var languageCreateInput : languageCreateInputs) {
 			var response = mockMvc.perform(post("/languages")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +121,7 @@ class LanguageControllerTest {
 	
 	@Test
 	@Order(2)
-    void givenEmptyInvalidLanguageInput_whenPostRequest_shouldReturnsBadRequestStatusAndErrorDetails() throws Exception {
+    void givenEmptyInvalidLanguageCreateInput_whenPostRequest_thenReturnsBadRequestStatusAndErrorResponse() throws Exception {
 		var response = mockMvc.perform(post("/languages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
@@ -115,7 +131,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(3)
-    void whenGetAllRequest_shouldReturnsOkStatusAndListOfLanguageDetails() throws Exception {
+    void whenGetRequest_thenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		var response = mockMvc.perform(get("/languages"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -129,7 +145,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(4)
-    void givenValidLanguageId_whenGetById_shouldReturnsOkStatusAndLanguageDetails() throws Exception {
+    void givenValidLanguageId_whenGetById_thenReturnsOkStatusAndLanguageOutput() throws Exception {
         for (int i = 0; i < languageCreateInputs.size(); i++) {
         	var languageCreateInput = languageCreateInputs.get(i);
         	var id = languageIds.get(i);
@@ -141,8 +157,8 @@ class LanguageControllerTest {
 	
 	@Test
 	@Order(5)
-    void givenInvalidLanguageId_whenGetById_shouldReturnsNotFoundStatusAndErrorDetails() throws Exception {
-    	var id = "66c8b94ff5249d656c735e3a";
+    void givenInvalidLanguageId_whenGetById_thenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+    	var id = "invalid_id";
     	var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
     		.andExpect(status().isNotFound());
     	checkErrorResponseExpectedResult(response, ErrorResponse.notFound(String.format("Idioma com o ID %s não foi encontrado", id)), "$");
@@ -150,36 +166,50 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(6)
-    void givenValidLanguageInput_whenPutRequest_shouldReturnsOkStatusAndLanguageDetails() throws Exception {
+    void givenValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
         var id = languageIds.get(0);
-        var languageCreateInput =
-        		LanguageCreateInput.builder()
-        		.code("en_GB")
-        		.name("Inglês Britânico")
-        		.build();
+        var languageUpdateInput = languageUpdateInputs.get(0);
         var response = mockMvc.perform(put("/languages/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(languageCreateInput)))
+            .content(objectMapper.writeValueAsString(languageUpdateInput)))
             .andExpect(status().isOk());
-        checkLanguageOutputExpectedResult(response, languageCreateInput, "$");
+        checkLanguageOutputExpectedResult(response, languageUpdateInput, "$");
     }
 	
 	@Test
 	@Order(7)
-    void givenEmptyValidLanguageInput_whenPutRequest_shouldReturnsOkStatusAndLanguageDetails() throws Exception {
+    void givenEmptyValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
         var id = languageIds.get(1);
-        var languageCreateInput = languageCreateInputs.get(1);
+        var languageUpdateInput = languageUpdateInputs.get(0);
         var response = mockMvc.perform(put("/languages/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
             .andExpect(status().isOk());
-        checkLanguageOutputExpectedResult(response, languageCreateInput, "$");
+        checkLanguageOutputExpectedResult(response, languageUpdateInput, "$");
     }
 
 	@Test
 	@Order(8)
-    void givenValidLanguageId_whenDeleteRequest_shouldReturnsOkStatus() throws Exception {
+    void givenValidLanguageId_afterPutRequest_whenGetById_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    	var languageUpdateInput = languageUpdateInputs.get(0);
+    	var id = languageIds.get(0);
+    	var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
+    		.andExpect(status().isOk());
+    	checkLanguageOutputExpectedResult(response, languageUpdateInput, "$");
+    }
+
+	@Test
+	@Order(9)
+    void givenValidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
         var id = languageIds.get(2);
+		mockMvc.perform(delete("/languages/{id}", id))
+            .andExpect(status().isOk());
+    }
+
+	@Test
+	@Order(10)
+    void givenInvalidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+        var id = "invalid_id";
 		mockMvc.perform(delete("/languages/{id}", id))
             .andExpect(status().isOk());
     }
@@ -205,8 +235,8 @@ class LanguageControllerTest {
 
 	@AfterAll
     public void cleanUp() {
-        mongoTemplate.getDb().drop();
-//		mongoTemplate.getCollection("languages").drop();
+//        mongoTemplate.getDb().drop();
+		mongoTemplate.getCollection("languages").drop();
     }
 
 }
