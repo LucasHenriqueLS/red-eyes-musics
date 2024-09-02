@@ -1,6 +1,7 @@
 package br.com.uuu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.com.uuu.converter.LanguageConverter;
 import br.com.uuu.json.input.language.LanguageCreateInput;
@@ -113,8 +115,8 @@ class LanguageServiceTest {
         checkLanguage(output, languageOutput);
         
         verify(languageConverter).toEntity(any(Language.class), any(LanguageCreateInput.class));
-        verify(languageRepository).save(any(Language.class));
-        verify(languageConverter).toOutput(any(Language.class));
+        verify(languageRepository).save(language);
+        verify(languageConverter).toOutput(language);
     }
 
     @Test
@@ -129,16 +131,21 @@ class LanguageServiceTest {
 
         assertThat(output).isNotNull();
         checkLanguage(output, languageOutput);
+
+        verify(languageRepository).findById("1");
+        verify(languageConverter).toOutput(language);
     }
 
-//    @Test
-//    void whenInvalidGetById_thenThrowException() {
-//        when(languageRepository.findById("4")).thenReturn(Optional.empty());
-//
-//        assertThrows(RuntimeException.class, () -> {
-//            languageService.getByIdToOutput("4");
-//        });
-//    }
+    @Test
+    void whenInvalidGetByIdToOutput_thenThrowException() {
+        when(languageRepository.findById("4")).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () -> {
+            languageService.getByIdToOutput("4");
+        });
+
+        verify(languageRepository).findById("4");
+    }
 
     @Test
     void whenGetAllToOutput_thenReturnAllLanguageOutputs() {
@@ -149,6 +156,9 @@ class LanguageServiceTest {
 
         assertThat(allLanguages).hasSize(languages.size());
         assertThat(allLanguages).containsAll(languageOutputs);
+
+        verify(languageRepository).findAll();
+        verify(languageConverter).toOutput(languages);
     }
 
     @Test
@@ -171,6 +181,11 @@ class LanguageServiceTest {
 
         assertThat(output).isNotNull();
         checkLanguage(output, languageOutput);
+
+        verify(languageConverter).toEntity(any(Language.class), any(LanguageUpdateInput.class));
+        verify(languageRepository).findById("1");
+        verify(languageRepository).save(updatedLanguage);
+        verify(languageConverter).toOutput(updatedLanguage);
     }
 
     @Test
