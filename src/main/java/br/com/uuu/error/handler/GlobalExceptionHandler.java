@@ -1,7 +1,7 @@
 package br.com.uuu.error.handler;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,13 +17,13 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+        List<String> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             var fieldName = ((FieldError) error).getField();
             var errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            errors.add(String.format("%s: %s", fieldName, errorMessage));
         });
-        var error = ErrorResponse.badRequest().setMessage(errors);
+        var error = ErrorResponse.badRequest().setMessage(errors.toString());
         return ResponseEntity.badRequest().body(error);
     }
 

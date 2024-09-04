@@ -3,6 +3,7 @@ package br.com.uuu.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,124 +18,109 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.uuu.converter.LanguageConverter;
-import br.com.uuu.json.input.language.LanguageCreateInput;
-import br.com.uuu.json.input.language.LanguageUpdateInput;
-import br.com.uuu.json.output.language.LanguageOutput;
+import br.com.uuu.converter.GenreConverter;
+import br.com.uuu.json.input.genre.GenreCreateInput;
+import br.com.uuu.json.input.genre.GenreUpdateInput;
+import br.com.uuu.json.output.genre.GenreOutput;
 import br.com.uuu.model.mongodb.entity.Genre;
-import br.com.uuu.model.mongodb.entity.Language;
-import br.com.uuu.model.mongodb.repository.LanguageRepository;
+import br.com.uuu.model.mongodb.repository.GenreRepository;
 
 class GenreServiceTest {
 
     @Mock
-    private LanguageRepository genreRepository;
+    private GenreRepository genreRepository;
     
     @Mock
-    private LanguageConverter genreConverter;
+    private GenreConverter genreConverter;
 
     @InjectMocks
-    private LanguageService genreService;
+    private GenreService genreService;
 
     private List<Genre> genres;
     
-    private List<LanguageCreateInput> languageCreateInputs;
+    private List<GenreCreateInput> genreCreateInputs;
     
-    private List<LanguageOutput> languageOutputs;
+    private List<GenreOutput> genreOutputs;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         genres = new ArrayList<>();
-        languageCreateInputs = new ArrayList<>();
-        languageOutputs = new ArrayList<>();
-        genres.add(buildLanguage("1", "en_US", "Inglês Americano"));
-        genres.add(buildLanguage("2", "pt_BR", "Português Brasileiro"));
-        genres.add(buildLanguage("3", "ja_JP", "Japonês"));
-        languageCreateInputs.add(
-    			LanguageCreateInput.builder()
- 				.code("en_US")
- 				.name("Inglês Americano")
- 				.build());
-    	languageCreateInputs.add(
-    			LanguageCreateInput.builder()
- 				.code("pt_BR")
- 				.name("Português Brasileiro")
- 				.build());
-    	languageCreateInputs.add(
-    			LanguageCreateInput.builder()
- 				.code("ja_JP")
- 				.name("Japonês")
- 				.build());
-    	languageOutputs.add(
-    			LanguageOutput.builder()
-    			.id("1")
-    			.code("en_US")
-    			.name("Inglês Americano")
-    			.build());
-    	languageOutputs.add(
-    			LanguageOutput.builder()
-    			.id("2")
-    			.code("pt_BR")
- 				.name("Português Brasileiro")
-    			.build());
-    	languageOutputs.add(
-    			LanguageOutput.builder()
-    			.id("3")
-    			.code("ja_JP")
- 				.name("Japonês")
-    			.build());
+        genreCreateInputs = new ArrayList<>();
+        genreOutputs = new ArrayList<>();
+        genres.add(buildGenre("1", "Clássica", "Música de concerto, chamada popularmente de música clássica ou música erudita, é a principal variedade de música produzida ou enraizada nas tradições da música secular e litúrgica ocidental."));
+        genres.add(buildGenre("2", "Pop", "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido."));
+        genres.add(buildGenre("3", "J-Rock", "Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão."));
+        genres.forEach(genre -> {
+        	genreCreateInputs.add(buildGenreCreateInput(genre.getName(), genre.getDescription()));
+        	genreOutputs.add(buildGenreOutput(genre.getId(), genre.getName(), genre.getDescription()));
+        });
     }
 
-    private Language buildLanguage(String id, String code, String name) {
-		var language = new Language();
-		language.setId(id);
-		language.setCode(code);
-		language.setName(name);
-        return language;
+    private Genre buildGenre(String id, String name, String description) {
+    	var genre = new Genre();
+    	genre.setId(id);
+    	genre.setDescription(description);
+    	genre.setName(name);
+        return genre;
 	}
 
-    private void checkLanguage(LanguageOutput output, LanguageOutput language) {
-		assertThat(output.getId()).isEqualTo(language.getId());
-		assertThat(output.getCode()).isEqualTo(language.getCode());
-		assertThat(output.getName()).isEqualTo(language.getName());
+    private GenreCreateInput buildGenreCreateInput(String name, String description) {
+        return GenreCreateInput.builder()
+ 				.name(name)
+ 				.description(description)
+ 				.build();
+	}
+
+    private GenreOutput buildGenreOutput(String id, String name, String description) {
+        return GenreOutput.builder()
+    			.id(id)
+    			.name(name)
+ 				.description(description)
+ 				.build();
+	}
+
+    private void checkGenre(GenreOutput output, GenreOutput genre) {
+		assertThat(output.getId()).isEqualTo(genre.getId());
+		assertThat(output.getName()).isEqualTo(genre.getName());
+		assertThat(output.getDescription()).isEqualTo(genre.getDescription());
 	}
 
     @Test
-    void whenSaveFromInputToOutput_thenLanguageIsSaved() {
-    	var language = genres.get(0);
-    	var languageCreateInput = languageCreateInputs.get(0);
-    	var languageOutput = languageOutputs.get(0);
+    void whenSaveFromInputToOutput_thenGenreIsSaved() {
+    	var genre = genres.get(0);
+    	var genreCreateInput = genreCreateInputs.get(0);
+    	var genreOutput = genreOutputs.get(0);
         
-    	when(genreConverter.toEntity(any(Language.class), any(LanguageCreateInput.class))).thenReturn(language);
-        when(genreRepository.save(language)).thenReturn(language);
-        when(genreConverter.toOutput(language)).thenReturn(languageOutput);
+    	when(genreConverter.toEntity(any(Genre.class), eq(genreCreateInput))).thenReturn(genre);
+        when(genreRepository.save(genre)).thenReturn(genre);
+        when(genreConverter.toOutput(genre)).thenReturn(genreOutput);
 
-        var output = genreService.saveFromInputToOutput(languageCreateInput);
+        var output = genreService.saveFromInputToOutput(genreCreateInput);
 
         assertThat(output).isNotNull();
-        checkLanguage(output, languageOutput);
+        checkGenre(output, genreOutput);
         
-        verify(genreConverter).toEntity(any(Language.class), any(LanguageCreateInput.class));
-        verify(genreRepository).save(language);
-        verify(genreConverter).toOutput(language);
+        verify(genreConverter).toEntity(any(Genre.class), eq(genreCreateInput));
+        verify(genreRepository).save(genre);
+        verify(genreConverter).toOutput(genre);
     }
 
     @Test
-    void whenGetByIdToOutput_thenReturnLanguageOutput() {
-    	var language = genres.get(0);
-    	var languageOutput = languageOutputs.get(0);
+    void whenGetByIdToOutput_thenReturnGenreOutput() {
+    	var genre = genres.get(0);
+    	var genreOutput = genreOutputs.get(0);
 
-        when(genreRepository.findById("1")).thenReturn(Optional.of(language));
-        when(genreConverter.toOutput(language)).thenReturn(languageOutput);
+        when(genreRepository.findById("1")).thenReturn(Optional.of(genre));
+        when(genreConverter.toOutput(genre)).thenReturn(genreOutput);
 
         var output = genreService.getByIdToOutput("1");
 
         assertThat(output).isNotNull();
-        checkLanguage(output, languageOutput);
+        checkGenre(output, genreOutput);
 
         verify(genreRepository).findById("1");
-        verify(genreConverter).toOutput(language);
+        verify(genreConverter).toOutput(genre);
     }
 
     @Test
@@ -149,48 +135,48 @@ class GenreServiceTest {
     }
 
     @Test
-    void whenGetAllToOutput_thenReturnAllLanguageOutputs() {
+    void whenGetAllToOutput_thenReturnAllGenreOutputs() {
         when(genreRepository.findAll()).thenReturn(genres);
-        when(genreConverter.toOutput(genres)).thenReturn(languageOutputs);
+        when(genreConverter.toOutput(genres)).thenReturn(genreOutputs);
 
-        var allLanguages = genreService.getAllToOutput();
+        var allGenres = genreService.getAllToOutput();
 
-        assertThat(allLanguages).hasSize(genres.size());
-        assertThat(allLanguages).containsAll(languageOutputs);
+        assertThat(allGenres).hasSize(genres.size());
+        assertThat(allGenres).containsAll(genreOutputs);
 
         verify(genreRepository).findAll();
         verify(genreConverter).toOutput(genres);
     }
 
     @Test
-    void whenUpdateFromInputToOutput_thenLanguageIsUpdated() {
-    	var language = genres.get(0);
-    	var updatedLanguage = genres.get(2);
-    	var languageOutput = languageOutputs.get(2);
-    	var languageUpdateInput =
-    			LanguageUpdateInput.builder()
-    			.code(Optional.of("ja_JP"))
-    			.name(Optional.of("Japonês"))
+    void whenUpdateFromInputToOutput_thenGenreIsUpdated() {
+    	var genre = genres.get(0);
+    	var updatedGenre = genres.get(2);
+    	var genreOutput = genreOutputs.get(2);
+    	var genreUpdateInput =
+    			GenreUpdateInput.builder()
+    			.name(Optional.of("J-Rock"))
+    			.description(Optional.of("Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão."))
     			.build();
 
-    	when(genreConverter.toEntity(any(Language.class), any(LanguageUpdateInput.class))).thenReturn(updatedLanguage);
-        when(genreRepository.findById("1")).thenReturn(Optional.of(language));
-        when(genreRepository.save(updatedLanguage)).thenReturn(updatedLanguage);
-        when(genreConverter.toOutput(updatedLanguage)).thenReturn(languageOutput);
+    	when(genreConverter.toEntity(genre, genreUpdateInput)).thenReturn(updatedGenre);
+        when(genreRepository.findById("1")).thenReturn(Optional.of(genre));
+        when(genreRepository.save(updatedGenre)).thenReturn(updatedGenre);
+        when(genreConverter.toOutput(updatedGenre)).thenReturn(genreOutput);
 
-        var output = genreService.updateFromInputToOutput("1", languageUpdateInput);
+        var output = genreService.updateFromInputToOutput("1", genreUpdateInput);
 
         assertThat(output).isNotNull();
-        checkLanguage(output, languageOutput);
+        checkGenre(output, genreOutput);
 
-        verify(genreConverter).toEntity(any(Language.class), any(LanguageUpdateInput.class));
+        verify(genreConverter).toEntity(genre, genreUpdateInput);
         verify(genreRepository).findById("1");
-        verify(genreRepository).save(updatedLanguage);
-        verify(genreConverter).toOutput(updatedLanguage);
+        verify(genreRepository).save(updatedGenre);
+        verify(genreConverter).toOutput(updatedGenre);
     }
 
     @Test
-    void whenDeleteLanguage_thenLanguageIsDeleted() {
+    void whenDeleteLanguage_thenGenreIsDeleted() {
         genreService.delete("1");
         verify(genreRepository).deleteById("1");
     }
