@@ -116,7 +116,7 @@ class GenreControllerTest {
                 .content("{}"))
                 .andExpect(status().isBadRequest());
 
-		var errorResponse = ErrorResponse.badRequest("[name: não pode ser nulo ou vazio]");
+		var errorResponse = ErrorResponse.badRequest("{name=não pode ser nulo ou vazio}");
 		checkErrorResponse(response, errorResponse, "$");
     }
 

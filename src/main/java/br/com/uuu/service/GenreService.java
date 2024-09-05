@@ -40,10 +40,6 @@ public class GenreService {
 		return genreConverter.toOutput(getById(id));
 	}
 
-	public Boolean existsById(String id) {
-		return genreRepository.existsById(id);
-	}
-
 	public Genre save(Genre genre) {
 		return genreRepository.save(genre);
 	}

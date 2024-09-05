@@ -1,11 +1,14 @@
 package br.com.uuu.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -30,6 +33,7 @@ import com.jayway.jsonpath.JsonPath;
 import br.com.uuu.converter.LanguageConverter;
 import br.com.uuu.error.exception.ErrorResponse;
 import br.com.uuu.json.input.language.LanguageCreateInput;
+import br.com.uuu.json.input.language.LanguageUpdateInput;
 import br.com.uuu.json.output.language.LanguageOutput;
 import br.com.uuu.model.mongodb.entity.Language;
 
@@ -67,12 +71,6 @@ class LanguageControllerTest {
     		);
     	languages = languageCreateInputs.stream().map(input -> languageConverter.toEntity(new Language(), input)).collect(Collectors.toList());
     	languageOutputs = languages.stream().map(entity -> languageConverter.toOutput(entity)).collect(Collectors.toList());
-
-//    	languageUpdateInputs.add(
-//    			LanguageUpdateInput.builder()
-//        		.code(Optional.of("en_GB"))
-//        		.name(Optional.of("Inglês Britânico"))
-//        		.build());
     }
     
     private void checkLanguageOutput(ResultActions response, LanguageOutput languageOutput, String jsonPath) throws Exception {
@@ -118,7 +116,7 @@ class LanguageControllerTest {
                 .content("{}"))
                 .andExpect(status().isBadRequest());
 
-		var errorResponse = ErrorResponse.badRequest("[code: não pode ser nulo ou vazio, name: não pode ser nulo ou vazio]");
+		var errorResponse = ErrorResponse.badRequest("{code=não pode ser nulo ou vazio, name=não pode ser nulo ou vazio}");
 		checkErrorResponse(response, errorResponse, "$");
     }
 
@@ -154,85 +152,91 @@ class LanguageControllerTest {
 		}
 	}
 
-//	@Test
-//	@Order(4)
-//    void givenValidLanguageId_whenGetById_thenReturnsOkStatusAndLanguageOutput() throws Exception {
-//        for (int i = 0; i < languageCreateInputs.size(); i++) {
-//        	var languageCreateInput = languageCreateInputs.get(i);
-//        	var id = languageIds.get(i);
-//        	var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
-//        		.andExpect(status().isOk());
-//        	checkLanguageOutputExpectedResult(response, languageCreateInput, "$");
-//        }
-//    }
-//	
-//	@Test
-//	@Order(5)
-//    void givenInvalidLanguageId_whenGetById_thenReturnsNotFoundStatusAndErrorResponse() throws Exception {
-//    	var id = "invalid_id";
-//    	var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
-//    		.andExpect(status().isNotFound());
-//    	checkErrorResponseExpectedResult(response, ErrorResponse.notFound(String.format("Idioma com o ID %s não foi encontrado", id)), "$");
-//    }
-//
-//	@Test
-//	@Order(6)
-//    void givenValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
-//        var id = languageIds.get(0);
-//        var languageUpdateInput = languageUpdateInputs.get(0);
-//        var response = mockMvc.perform(put("/languages/{id}", id)
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(languageUpdateInput)))
-//            .andExpect(status().isOk());
-//        checkLanguageOutputExpectedResult(response, languageUpdateInput, "$");
-//    }
-//	
-//	@Test
-//	@Order(7)
-//    void givenEmptyValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
-//        var id = languageIds.get(0);
-//        var languageUpdateInput = languageUpdateInputs.get(0);
-//        var response = mockMvc.perform(put("/languages/{id}", id)
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content("{}"))
-//            .andExpect(status().isOk());
-//        checkLanguageOutputExpectedResult(response, languageUpdateInput, "$");
-//    }
-//
-//	@Test
-//	@Order(8)
-//    void givenValidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
-//        var id = languageIds.get(2);
-//		mockMvc.perform(delete("/languages/{id}", id))
-//            .andExpect(status().isOk());
-//    }
-//
-//	@Test
-//	@Order(9)
-//    void givenInvalidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
-//        var id = "invalid_id";
-//		mockMvc.perform(delete("/languages/{id}", id))
-//            .andExpect(status().isOk());
-//    }
+	@Test
+	@Order(5)
+    void givenInvalidLanguageId_whenGetById_thenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+    	var id = "invalid_id";
+		var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
+    		.andExpect(status().isNotFound());
 
-//    @Test
-//    void whenDeleteLanguage_thenStatus204() throws Exception {
-//        // Primeiro, cria um novo idioma para deletar depois
-//        String newLanguageJson = "{ \"code\": \"pt\", \"name\": \"Portuguese\" }";
-//
-//        mockMvc.perform(post("/api/languages")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(newLanguageJson))
-//                .andExpect(status().isCreated());
-//
-//        // Agora, deleta o idioma criado
-//        mockMvc.perform(delete("/api/languages/{id}", "pt"))
-//                .andExpect(status().isNoContent());
-//
-//        // Verifica se o idioma foi realmente deletado
-//        mockMvc.perform(get("/api/languages/{id}", "pt"))
-//                .andExpect(status().isNotFound());
-//    }
+    	var errorResponse = ErrorResponse.notFound(String.format("Idioma com o ID %s não foi encontrado", id));
+    	checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(6)
+    void givenValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+		var code = "en_GB";
+		var name = "Inglês Britânico";
+		var languageUpdateInput = LanguageUpdateInput.builder().code(Optional.of(code)).name(Optional.of(name)).build();
+
+        var response = mockMvc.perform(put("/languages/{id}", languages.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(languageUpdateInput)))
+            .andExpect(status().isOk());
+
+        var updatedLanguage = languages.get(0);
+        updatedLanguage.setCode(code);
+        updatedLanguage.setName(name);
+        var updatedLanguageOutput = languageOutputs.get(0);
+        updatedLanguageOutput.setCode(code);
+        updatedLanguageOutput.setName(name);
+
+        checkLanguageOutput(response, updatedLanguageOutput, "$");
+    }
+
+	@Test
+	@Order(7)
+    void givenEmptyValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+        var languageOutput = languageOutputs.get(0);
+
+        var response = mockMvc.perform(put("/languages/{id}", languages.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
+            .andExpect(status().isOk());
+        checkLanguageOutput(response, languageOutput, "$");
+    }
+
+	@Test
+	@Order(8)
+    void whenGetAllRequest_afterPutRequest_thenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
+		getAll();
+    }
+
+	@Test
+	@Order(9)
+    void givenValidGenreId_whenGetById_afterPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+        getById();
+    }
+
+	@Test
+	@Order(10)
+    void givenValidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+		mockMvc.perform(delete("/languages/{id}", languages.get(0).getId()))
+            .andExpect(status().isOk());
+
+		languages.remove(0);
+		languageOutputs.remove(0);
+    }
+
+	@Test
+	@Order(11)
+    void givenInvalidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+		mockMvc.perform(delete("/languages/{id}", "invalid_id"))
+            .andExpect(status().isOk());
+    }
+
+	@Test
+	@Order(12)
+    void whenGetAllRequest_afterDeleteRequest_thenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
+		getAll();
+    }
+
+	@Test
+	@Order(13)
+    void givenValidLanguageId_whenGetById_afterDeleteRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+        getById();
+    }
 
 	@AfterAll
     public void cleanUp() {
