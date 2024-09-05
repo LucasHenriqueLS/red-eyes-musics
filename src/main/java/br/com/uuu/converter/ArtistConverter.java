@@ -60,7 +60,7 @@ public class ArtistConverter {
 	public ArtistOutput toOutput(Artist artist) {
 		return ArtistOutput.builder()
 				.id(artist.getId())
-				.names(artist.getGenreIds())
+				.names(artist.getNames())
 				.bio(artist.getBio())
 				.genreIds(artist.getGenreIds())
 				.imageUrl(artist.getImageUrl())

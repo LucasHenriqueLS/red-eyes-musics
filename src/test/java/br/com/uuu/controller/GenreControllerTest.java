@@ -56,9 +56,9 @@ class GenreControllerTest {
 	@Autowired
 	private GenreConverter genreConverter;
 
-	private List<Genre> genres;
+	private List<GenreCreateInput> genreCreateInputs;
 
-    private List<GenreCreateInput> genreCreateInputs;
+	private List<Genre> genres;
 
     private List<GenreOutput> genreOutputs;
 
