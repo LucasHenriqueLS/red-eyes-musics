@@ -89,11 +89,11 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(1)
-	void givenValidLanguageCreateInput_whenPostRequest_thenReturnsCreatedStatusAndLanguageOutput() throws Exception {
+	void givenValidLanguageCreateInputWhenPostRequestThenReturnsCreatedStatusAndLanguageOutput() throws Exception {
 		for (int i = 0; i < languageCreateInputs.size(); i++) {
 			var languageCreateInput = languageCreateInputs.get(i);
 			var languageOutput = languageOutputs.get(i);
-			
+
 			var response = mockMvc.perform(post("/languages")
 				    .contentType(MediaType.APPLICATION_JSON)
 				    .content(objectMapper.writeValueAsString(languageCreateInput)))
@@ -110,7 +110,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(2)
-    void givenEmptyInvalidLanguageCreateInput_whenPostRequest_thenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+    void givenInvalidLanguageCreateInputWithAllFieldsEmptyWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
 		var response = mockMvc.perform(post("/languages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
@@ -122,7 +122,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(3)
-    void whenGetAllRequest_afterPostRequest_thenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
+    void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		getAll();
     }
 
@@ -140,7 +140,7 @@ class LanguageControllerTest {
 	
 	@Test
 	@Order(4)
-    void givenValidLanguageId_whenGetById_afterPostRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    void givenValidLanguageIdWhenGetByIdAfterPostRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         getById();
     }
 
@@ -154,7 +154,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(5)
-    void givenInvalidLanguageId_whenGetById_thenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+    void givenInvalidLanguageIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
     	var id = "invalid_id";
 		var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
     		.andExpect(status().isNotFound());
@@ -165,7 +165,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(6)
-    void givenValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    void givenValidLanguageUpdateInputWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
 		var code = "en_GB";
 		var name = "Inglês Britânico";
 		var languageUpdateInput = LanguageUpdateInput.builder().code(Optional.of(code)).name(Optional.of(name)).build();
@@ -187,7 +187,7 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(7)
-    void givenEmptyValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    void givenEmptyValidLanguageUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         var languageOutput = languageOutputs.get(0);
 
         var response = mockMvc.perform(put("/languages/{id}", languages.get(0).getId())
@@ -199,19 +199,19 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(8)
-    void whenGetAllRequest_afterPutRequest_thenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
+    void whenGetAllRequestAfterPutRequestThenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
 	@Order(9)
-    void givenValidGenreId_whenGetById_afterPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    void givenValidGenreIdWhenGetById_afterPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         getById();
     }
 
 	@Test
 	@Order(10)
-    void givenValidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+    void givenValidLanguageIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/languages/{id}", languages.get(0).getId()))
             .andExpect(status().isOk());
 
@@ -221,20 +221,20 @@ class LanguageControllerTest {
 
 	@Test
 	@Order(11)
-    void givenInvalidLanguageId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+    void givenInvalidLanguageIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/languages/{id}", "invalid_id"))
             .andExpect(status().isOk());
     }
 
 	@Test
 	@Order(12)
-    void whenGetAllRequest_afterDeleteRequest_thenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
+    void whenGetAllRequestAfterDeleteRequestThenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
 	@Order(13)
-    void givenValidLanguageId_whenGetById_afterDeleteRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    void givenValidLanguageIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         getById();
     }
 

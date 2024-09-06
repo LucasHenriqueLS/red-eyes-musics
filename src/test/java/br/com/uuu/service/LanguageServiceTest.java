@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,45 +43,24 @@ class LanguageServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        languages = new ArrayList<>();
-        languageCreateInputs = new ArrayList<>();
-        languageOutputs = new ArrayList<>();
-        languages.add(buildLanguage("1", "en_US", "Inglês Americano"));
-        languages.add(buildLanguage("2", "pt_BR", "Português Brasileiro"));
-        languages.add(buildLanguage("3", "ja_JP", "Japonês"));
-        languageCreateInputs.add(
-    			LanguageCreateInput.builder()
- 				.code("en_US")
- 				.name("Inglês Americano")
- 				.build());
-    	languageCreateInputs.add(
-    			LanguageCreateInput.builder()
- 				.code("pt_BR")
- 				.name("Português Brasileiro")
- 				.build());
-    	languageCreateInputs.add(
-    			LanguageCreateInput.builder()
- 				.code("ja_JP")
- 				.name("Japonês")
- 				.build());
-    	languageOutputs.add(
-    			LanguageOutput.builder()
-    			.id("1")
-    			.code("en_US")
-    			.name("Inglês Americano")
-    			.build());
-    	languageOutputs.add(
-    			LanguageOutput.builder()
-    			.id("2")
-    			.code("pt_BR")
- 				.name("Português Brasileiro")
-    			.build());
-    	languageOutputs.add(
-    			LanguageOutput.builder()
-    			.id("3")
-    			.code("ja_JP")
- 				.name("Japonês")
-    			.build());
+        languages = List.of(
+        		buildLanguage("1", "en_US", "Inglês Americano"),
+                buildLanguage("2", "pt_BR", "Português Brasileiro"),
+                buildLanguage("3", "ja_JP", "Japonês")
+        	);
+        languageCreateInputs = languages.stream().map(entity ->
+        	LanguageCreateInput.builder()
+        	.code(entity.getCode())
+        	.name(entity.getName())
+        	.build()
+        ).toList();
+        languageOutputs = languages.stream().map(entity ->
+        	LanguageOutput.builder()
+        	.id(entity.getId())
+        	.code(entity.getCode())
+        	.name(entity.getName())
+        	.build()
+        ).toList();
     }
 
     private Language buildLanguage(String id, String code, String name) {
@@ -100,7 +78,7 @@ class LanguageServiceTest {
 	}
 
     @Test
-    void whenSaveFromInputToOutput_thenLanguageIsSaved() {
+    void whenSaveFromInputToOutputThenLanguageIsSaved() {
     	var language = languages.get(0);
     	var languageCreateInput = languageCreateInputs.get(0);
     	var languageOutput = languageOutputs.get(0);
@@ -120,7 +98,7 @@ class LanguageServiceTest {
     }
 
     @Test
-    void whenGetByIdToOutput_thenReturnLanguageOutput() {
+    void whenGetByIdToOutputThenReturnLanguageOutput() {
     	var language = languages.get(0);
     	var languageOutput = languageOutputs.get(0);
 
@@ -137,7 +115,7 @@ class LanguageServiceTest {
     }
 
     @Test
-    void whenInvalidGetByIdToOutput_thenThrowException() {
+    void whenInvalidGetByIdToOutputThenThrowException() {
         when(languageRepository.findById("4")).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> {
@@ -148,7 +126,7 @@ class LanguageServiceTest {
     }
 
     @Test
-    void whenGetAllToOutput_thenReturnAllLanguageOutputs() {
+    void whenGetAllToOutputThenReturnAllLanguageOutputs() {
         when(languageRepository.findAll()).thenReturn(languages);
         when(languageConverter.toOutput(languages)).thenReturn(languageOutputs);
 
@@ -162,7 +140,7 @@ class LanguageServiceTest {
     }
 
     @Test
-    void whenUpdateFromInputToOutput_thenLanguageIsUpdated() {
+    void whenUpdateFromInputToOutputThenLanguageIsUpdated() {
     	var language = languages.get(0);
     	var updatedLanguage = languages.get(2);
     	var languageOutput = languageOutputs.get(2);
@@ -189,7 +167,7 @@ class LanguageServiceTest {
     }
 
     @Test
-    void whenDeleteLanguage_thenLanguageIsDeleted() {
+    void whenDeleteLanguageThenLanguageIsDeleted() {
         languageService.delete("1");
         verify(languageRepository).deleteById("1");
     }

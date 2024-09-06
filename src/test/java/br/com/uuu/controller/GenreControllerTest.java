@@ -89,7 +89,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(1)
-	void givenValidGenreCreateInput_whenPostRequest_thenReturnsCreatedStatusAndGenreOutput() throws Exception {
+	void givenValidGenreCreateInputWhenPostRequestThenReturnsCreatedStatusAndGenreOutput() throws Exception {
 		for (int i = 0; i < genreCreateInputs.size(); i++) {
 			var genreCreateInput = genreCreateInputs.get(i);
 			var genreOutput = genreOutputs.get(i);
@@ -110,7 +110,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(2)
-    void givenEmptyInvalidGenreCreateInput_whenPostRequest_thenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+    void givenInvalidGenreCreateInputWithAllFieldsEmptyWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
 		var response = mockMvc.perform(post("/genres")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
@@ -122,7 +122,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(3)
-    void whenGetAllRequest_afterPostRequest_thenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
+    void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
 		getAll();
     }
 
@@ -140,7 +140,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(4)
-    void givenValidGenreId_whenGetById_afterPostRequest_thenReturnsOkStatusAndGenreOutput() throws Exception {
+    void givenValidGenreIdWhenGetByIdAfterPostRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
         getById();
     }
 
@@ -154,7 +154,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(5)
-    void givenInvalidGenreId_whenGetById_thenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+    void givenInvalidGenreIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
     	var id = "invalid_id";
 		var response = mockMvc.perform(get("/genres/get-by-id/{id}", id))
     		.andExpect(status().isNotFound());
@@ -165,7 +165,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(6)
-    void givenValidGenreUpdateInput_whenPutRequest_thenReturnsOkStatusAndGenreOutput() throws Exception {
+    void givenValidGenreUpdateInputWhenPutRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
 		var name = "Rock";
 		var description = "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido.";
 		var genreUpdateInput = GenreUpdateInput.builder().name(Optional.of(name)).description(Optional.of(description)).build();
@@ -187,7 +187,7 @@ class GenreControllerTest {
 
 	@Test
 	@Order(7)
-    void givenEmptyValidLanguageUpdateInput_whenPutRequest_thenReturnsOkStatusAndLanguageOutput() throws Exception {
+    void givenValidLanguageUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         var genreOutput = genreOutputs.get(0);
 
         var response = mockMvc.perform(put("/genres/{id}", genres.get(0).getId())
@@ -199,19 +199,19 @@ class GenreControllerTest {
 
 	@Test
 	@Order(8)
-    void whenGetRequest_afterPutRequest_thenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
+    void whenGetRequestAfterPutRequestThenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
 	@Order(9)
-    void givenValidGenreId_whenGetById_afterPutRequest_thenReturnsOkStatusAndGenreOutput() throws Exception {
+    void givenValidGenreIdWhenGetByIdAfterPutRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
         getById();
     }
 
 	@Test
 	@Order(10)
-    void givenValidGenreId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+    void givenValidGenreIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/genres/{id}", genres.get(0).getId()))
             .andExpect(status().isOk());
 
@@ -221,20 +221,20 @@ class GenreControllerTest {
 
 	@Test
 	@Order(11)
-    void givenInvalidGenreId_whenDeleteRequest_thenReturnsOkStatus() throws Exception {
+    void givenInvalidGenreIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/genres/{id}", "invalid_id"))
             .andExpect(status().isOk());
     }
 
 	@Test
 	@Order(12)
-    void whenGetRequest_afterDeleteRequest_thenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
+    void whenGetRequestAfterDeleteRequestThenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
 	@Order(13)
-    void givenValidGenreId_whenGetById_afterDeleteRequest_thenReturnsOkStatusAndGenreOutput() throws Exception {
+    void givenValidGenreIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
         getById();
     }
 
@@ -242,5 +242,19 @@ class GenreControllerTest {
     public void cleanUp() {
         mongoTemplate.getDb().drop();
     }
+
+	public static List<Genre> setupGenres(MockMvc mockMvc, ObjectMapper objectMapper, GenreConverter genreConverter) throws Exception {
+		var genreControllerTest = new GenreControllerTest();
+		return genreControllerTest.createGenres(mockMvc, objectMapper, genreConverter);
+	}
+
+	private List<Genre> createGenres(MockMvc mockMvc, ObjectMapper objectMapper, GenreConverter genreConverter) throws Exception {
+		this.genreConverter = genreConverter;
+		this.mockMvc = mockMvc;
+		this.objectMapper = objectMapper;
+		setup();
+		givenValidGenreCreateInputWhenPostRequestThenReturnsCreatedStatusAndGenreOutput();
+		return genres;
+	}
 
 }

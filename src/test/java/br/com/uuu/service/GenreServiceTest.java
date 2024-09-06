@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,16 +44,24 @@ class GenreServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        genres = new ArrayList<>();
-        genreCreateInputs = new ArrayList<>();
-        genreOutputs = new ArrayList<>();
-        genres.add(buildGenre("1", "Clássica", "Música de concerto, chamada popularmente de música clássica ou música erudita, é a principal variedade de música produzida ou enraizada nas tradições da música secular e litúrgica ocidental."));
-        genres.add(buildGenre("2", "Pop", "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido."));
-        genres.add(buildGenre("3", "J-Rock", "Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão."));
-        genres.forEach(genre -> {
-        	genreCreateInputs.add(buildGenreCreateInput(genre.getName(), genre.getDescription()));
-        	genreOutputs.add(buildGenreOutput(genre.getId(), genre.getName(), genre.getDescription()));
-        });
+        genres = List.of(
+        		buildGenre("1", "Clássica", "Música de concerto, chamada popularmente de música clássica ou música erudita, é a principal variedade de música produzida ou enraizada nas tradições da música secular e litúrgica ocidental."),
+                buildGenre("2", "Pop", "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido."),
+                buildGenre("3", "J-Rock", "Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão.")
+        	);
+        genreCreateInputs = genres.stream().map(entity ->
+        	GenreCreateInput.builder()
+			.name(entity.getName())
+			.description(entity.getDescription())
+			.build()
+		).toList();
+        genreOutputs = genres.stream().map(entity ->
+        	GenreOutput.builder()
+        	.id(entity.getId())
+        	.name(entity.getName())
+        	.description(entity.getDescription())
+        	.build()
+        ).toList();
     }
 
     private Genre buildGenre(String id, String name, String description) {
@@ -65,21 +72,6 @@ class GenreServiceTest {
         return genre;
 	}
 
-    private GenreCreateInput buildGenreCreateInput(String name, String description) {
-        return GenreCreateInput.builder()
- 				.name(name)
- 				.description(description)
- 				.build();
-	}
-
-    private GenreOutput buildGenreOutput(String id, String name, String description) {
-        return GenreOutput.builder()
-    			.id(id)
-    			.name(name)
- 				.description(description)
- 				.build();
-	}
-
     private void checkGenre(GenreOutput output, GenreOutput genre) {
 		assertThat(output.getId()).isEqualTo(genre.getId());
 		assertThat(output.getName()).isEqualTo(genre.getName());
@@ -87,7 +79,7 @@ class GenreServiceTest {
 	}
 
     @Test
-    void whenSaveFromInputToOutput_thenGenreIsSaved() {
+    void whenSaveFromInputToOutputThenGenreIsSaved() {
     	var genre = genres.get(0);
     	var genreCreateInput = genreCreateInputs.get(0);
     	var genreOutput = genreOutputs.get(0);
@@ -107,7 +99,7 @@ class GenreServiceTest {
     }
 
     @Test
-    void whenGetByIdToOutput_thenReturnGenreOutput() {
+    void whenGetByIdToOutputThenReturnGenreOutput() {
     	var genre = genres.get(0);
     	var genreOutput = genreOutputs.get(0);
 
@@ -124,7 +116,7 @@ class GenreServiceTest {
     }
 
     @Test
-    void whenInvalidGetByIdToOutput_thenThrowException() {
+    void whenInvalidGetByIdToOutputThenThrowException() {
         when(genreRepository.findById("4")).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> {
@@ -135,7 +127,7 @@ class GenreServiceTest {
     }
 
     @Test
-    void whenGetAllToOutput_thenReturnAllGenreOutputs() {
+    void whenGetAllToOutputThenReturnAllGenreOutputs() {
         when(genreRepository.findAll()).thenReturn(genres);
         when(genreConverter.toOutput(genres)).thenReturn(genreOutputs);
 
@@ -149,7 +141,7 @@ class GenreServiceTest {
     }
 
     @Test
-    void whenUpdateFromInputToOutput_thenGenreIsUpdated() {
+    void whenUpdateFromInputToOutputThenGenreIsUpdated() {
     	var genre = genres.get(0);
     	var updatedGenre = genres.get(2);
     	var genreOutput = genreOutputs.get(2);
@@ -176,7 +168,7 @@ class GenreServiceTest {
     }
 
     @Test
-    void whenDeleteLanguage_thenGenreIsDeleted() {
+    void whenDeleteLanguageThenGenreIsDeleted() {
         genreService.delete("1");
         verify(genreRepository).deleteById("1");
     }
