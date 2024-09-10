@@ -71,9 +71,16 @@ class ArtistControllerTest {
 
     @BeforeAll
     public void setup() throws Exception {
-    	genres = GenreControllerTest.setupGenres(mockMvc, objectMapper, genreConverter);
+    	setupGenres();
+    	setupArtists(genres);
+    }
 
-        artistCreateInputs = List.of(
+    private void setupGenres() throws Exception {
+    	genres = GenreControllerTest.setupGenres(mockMvc, objectMapper, genreConverter);    	
+    }
+
+    private void setupArtists(List<Genre> genres) {
+    	artistCreateInputs = List.of(
     			ArtistCreateInput.builder().names(List.of("Michael Jackson", "Michael Joseph Jackson")).bio("Michael Jackson foi um cantor, compositor e dançarino norte-americano, amplamente considerado o Rei do Pop e um dos artistas mais influentes da história da música.").genreIds(List.of(genres.get(0).getId(), genres.get(1).getId())).imageUrl("https://example.com/images/michael_jackson.jpg").build(),
     			ArtistCreateInput.builder().names(List.of("Ariana Grande", "Ariana Grande-Butera")).bio("Ariana Grande é uma cantora e atriz norte-americana reconhecida por sua poderosa voz e influente presença na cultura pop.").genreIds(List.of(genres.get(0).getId(), genres.get(2).getId())).imageUrl("https://example.com/images/ariana_grande.jpg").build(),
     			ArtistCreateInput.builder().names(List.of("Hans Zimmer", "Hans Florian Zimmer")).bio("Hans Zimmer é um renomado compositor de trilhas sonoras para cinema, famoso por seu trabalho em filmes como 'O Rei Leão' e 'Duna'.").genreIds(List.of(genres.get(1).getId(), genres.get(2).getId())).imageUrl("https://example.com/images/hans_zimmer.jpg").build()
@@ -136,7 +143,7 @@ class ArtistControllerTest {
                 .content("{}"))
                 .andExpect(status().isBadRequest());
 
-		var errorResponse = ErrorResponse.badRequest("{names=não pode ser nulo ou vazio, genreIds=não pode ser nulo ou vazio}");
+		var errorResponse = ErrorResponse.badRequest("{genreIds=não pode ser nulo ou vazio, names=não pode ser nulo ou vazio}");
 		checkErrorResponse(response, errorResponse, "$");
     }
 
@@ -302,5 +309,19 @@ class ArtistControllerTest {
     public void cleanUp() {
         mongoTemplate.getDb().drop();
     }
+
+	public static List<Artist> setupArtist(MockMvc mockMvc, ObjectMapper objectMapper, ArtistConverter artistConverter, List<Genre> genres) throws Exception {
+		var artistgenreControllerTest = new ArtistControllerTest();
+		return artistgenreControllerTest.createArtist(mockMvc, objectMapper, artistConverter, genres);
+	}
+
+	private List<Artist> createArtist(MockMvc mockMvc, ObjectMapper objectMapper, ArtistConverter artistConverter, List<Genre> genres) throws Exception {
+		this.artistConverter = artistConverter;
+		this.mockMvc = mockMvc;
+		this.objectMapper = objectMapper;
+		setupArtists(genres);
+		givenValidArtistCreateInputWhenPostRequestThenReturnsCreatedStatusAndArtistOutput();
+		return artists;
+	}
 
 }
