@@ -17,12 +17,12 @@ import lombok.ToString;
 @Builder
 public class LanguageCreateInput {
 
-	@NotBlank(message = "não pode ser nulo ou vazio")
-	@Schema(description = "Código do idioma", example = "ja_JP")
+	@NotBlank(message = "não pode ser nulo, vazio ou conter somente espaços em branco")
+	@Schema(description = "Código do idioma", example = "en_US")
 	private String code;
 	
-	@NotBlank(message = "não pode ser nulo ou vazio")
-	@Schema(description = "Nome do idioma", example = "Japonês")
+	@NotBlank(message = "não pode ser nulo, vazio ou conter somente espaços em branco")
+	@Schema(description = "Nome do idioma", example = "Inglês Americano")
 	private String name;
 
 }

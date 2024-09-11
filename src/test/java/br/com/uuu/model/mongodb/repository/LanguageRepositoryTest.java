@@ -2,7 +2,6 @@ package br.com.uuu.model.mongodb.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,23 +15,28 @@ import br.com.uuu.model.mongodb.entity.Language;
 
 @DataMongoTest
 @ActiveProfiles("unit-test")
-class LanguageRepositoryTest {
+public class LanguageRepositoryTest {
 
 	@Autowired
     private LanguageRepository languageRepository;
 
     private List<Language> languages;
     
+    public static List<Language> getLanguages() {
+    	return List.of(
+    			buildLanguage("en_US", "Inglês Americano"),
+    	        buildLanguage("pt_BR", "Português Brasileiro"),
+    	        buildLanguage("ja_JP", "Japonês")		
+    		);
+    }
+
     @BeforeEach
     void setUp() {
         languageRepository.deleteAll();
-        languages = new ArrayList<>();
-        languages.add(buildLanguage("en_US", "Inglês Americano"));
-        languages.add(buildLanguage("pt_BR", "Português Brasileiro"));
-        languages.add(buildLanguage("ja_JP", "Japonês"));
+        languages = getLanguages();
     }
 
-	private Language buildLanguage(String code, String name) {
+	private static Language buildLanguage(String code, String name) {
 		var language = new Language();
 		language.setCode(code);
 		language.setName(name);

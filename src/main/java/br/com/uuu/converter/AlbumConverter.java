@@ -2,6 +2,7 @@ package br.com.uuu.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,13 +38,13 @@ public class AlbumConverter {
 	}
 
 	public Album toEntity(Album album, AlbumUpdateInput input) {
-		input.getArtistIds().ifPresent(artistIds -> setArtistsIfIsValid(album, artistIds));
-		input.getGenreIds().ifPresent(genreIds -> setGenresIfIsValid(album, genreIds));
+		Optional.ofNullable(input.getArtistIds()).ifPresent(artistIds -> setArtistsIfIsValid(album, artistIds));
+		Optional.ofNullable(input.getGenreIds()).ifPresent(genreIds -> setGenresIfIsValid(album, genreIds));
 
-		input.getTitle().ifPresent(album::setTitle);
-		input.getReleaseDate().ifPresent(album::setReleaseDate);
-		input.getCoverUrl().ifPresent(album::setCoverUrl);
-		input.getRecordCompanyName().ifPresent(album::setRecordCompanyName);
+		Optional.ofNullable(input.getTitle()).ifPresent(album::setTitle);
+		Optional.ofNullable(input.getReleaseDate()).ifPresent(album::setReleaseDate);
+		Optional.ofNullable(input.getCoverUrl()).ifPresent(album::setCoverUrl);
+		Optional.ofNullable(input.getRecordCompanyName()).ifPresent(album::setRecordCompanyName);
 
 		return album;
 	}
@@ -83,7 +84,7 @@ public class AlbumConverter {
 				.coverUrl(album.getCoverUrl())
 				.genreIds(album.getGenreIds())
 				.recordCompanyName(album.getRecordCompanyName())
-				.build();
+			   .build();
 	}
 
 }

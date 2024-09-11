@@ -2,6 +2,7 @@ package br.com.uuu.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,9 @@ public class LanguageConverter {
 	}
 	
 	public Language toEntity(Language language, LanguageUpdateInput input) {
-		input.getCode().ifPresent(language::setCode);
-		input.getName().ifPresent(language::setName);
-		
+		Optional.ofNullable(input.getCode()).ifPresent(language::setCode);
+		Optional.ofNullable(input.getName()).ifPresent(language::setName);
+
 		return language;
 	}
 	
@@ -40,7 +41,7 @@ public class LanguageConverter {
 				.id(language.getId())
 				.code(language.getCode())
 				.name(language.getName())
-				.build();
+			   .build();
 	}
 
 }

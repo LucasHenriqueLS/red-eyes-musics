@@ -1,8 +1,7 @@
 package br.com.uuu.json.input.language;
 
-import java.util.Optional;
-
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,15 +15,12 @@ import lombok.ToString;
 @Builder
 public class LanguageUpdateInput {
 
-	@Schema(description = "Código do idioma", example = "ja_JP")
-	private Optional<String> code;
-	
-	@Schema(description = "Nome do idioma", example = "Japonês")
-	private Optional<String> name;
-	
-	public LanguageUpdateInput() {
-		code = Optional.empty();
-		name = Optional.empty();
-	}
+	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
+	@Schema(description = "Código do idioma", example = "en_US")
+	private String code;
+
+	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
+	@Schema(description = "Nome do idioma", example = "Inglês Americano")
+	private String name;
 
 }

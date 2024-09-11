@@ -17,11 +17,11 @@ import lombok.ToString;
 @Builder
 public class GenreCreateInput {
 
-	@NotBlank(message = "não pode ser nulo ou vazio")
-	@Schema(description = "Nome do gênero", example = "J-Rock")
+	@NotBlank(message = "não pode ser nulo, vazio ou conter somente espaços em branco")
+	@Schema(description = "Nome do gênero", example = "Pop")
 	private String name;
 
-	@Schema(description = "Descrição do gênero", example = "Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão.")
+	@Schema(description = "Descrição do gênero", example = "O gênero Pop é conhecido por suas melodias cativantes e estrutura musical voltada para o público em geral. Abrange uma variedade de estilos e é popular globalmente.")
 	private String description;
 
 }

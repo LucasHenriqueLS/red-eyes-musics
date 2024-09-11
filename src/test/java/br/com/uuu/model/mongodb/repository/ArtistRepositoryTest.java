@@ -2,7 +2,6 @@ package br.com.uuu.model.mongodb.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,23 +15,28 @@ import br.com.uuu.model.mongodb.entity.Artist;
 
 @DataMongoTest
 @ActiveProfiles("unit-test")
-class ArtistRepositoryTest {
+public class ArtistRepositoryTest {
 
 	@Autowired
     private ArtistRepository artistRepository;
 
     private List<Artist> artists;
     
+    public static List<Artist> getArtists() {
+    	return List.of(
+    			buildArtist(List.of("Michael Jackson", "Michael Joseph Jackson"), "Michael Jackson foi um cantor, compositor e dançarino norte-americano, amplamente considerado o Rei do Pop e um dos artistas mais influentes da história da música.", List.of("b969e7a595f1d87174579c", "c87179e9c79647a557f17b95"), "https://example.com/images/michael_jackson.jpg"),
+    			buildArtist(List.of("Ariana Grande, Ariana Grande-Butera"), "Ariana Grande é uma cantora e atriz norte-americana reconhecida por sua poderosa voz e influente presença na cultura pop.", List.of("e969e7a595f1d87174579c", "f87179e9c79647a557f17b95"), "https://example.com/images/ariana_grande.jpg"),
+    			buildArtist(List.of("Hans Zimmer", "Hans Florian Zimmer"), "Hans Zimmer é um renomado compositor de trilhas sonoras para cinema, famoso por seu trabalho em filmes como 'O Rei Leão' e 'Duna'.", List.of("h969e7a595f1d87174579c", "i87179e9c79647a557f17b95"), "https://example.com/images/hans_zimmer.jpg")
+    		);
+    }
+
     @BeforeEach
     void setUp() {
         artistRepository.deleteAll();
-        artists = new ArrayList<>();
-        artists.add(buildArtist(List.of("Mamiko Noto", "Noto Mamiko"), "????", List.of("J-Pop", "J-Rock"), "????"));
-        artists.add(buildArtist(List.of("Skillet"), "????", List.of("Rock"), "????"));
-        artists.add(buildArtist(List.of("Michael Jackson", "Michael Joseph Jackson"), "????", List.of("Pop"), "????"));
+        artists = getArtists();        
     }
 
-	private Artist buildArtist(List<String> names, String bio, List<String> genreIds, String imageUrl) {
+	private static Artist buildArtist(List<String> names, String bio, List<String> genreIds, String imageUrl) {
 		var artist = new Artist();
 		artist.setNames(names);
 		artist.setBio(bio);

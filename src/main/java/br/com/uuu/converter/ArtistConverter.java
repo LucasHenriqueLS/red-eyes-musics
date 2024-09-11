@@ -2,6 +2,7 @@ package br.com.uuu.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,21 +22,20 @@ public class ArtistConverter {
 	private GenreService genreService;
 
 	public Artist toEntity(Artist artist, ArtistCreateInput input) {
-		artist.setNames(input.getNames());
-		artist.setBio(input.getBio());
-
 		setGenresIfIsValid(artist, input.getGenreIds());
 
+		artist.setNames(input.getNames());
+		artist.setBio(input.getBio());
 		artist.setImageUrl(input.getImageUrl());
 
 		return artist;
 	}
 
 	public Artist toEntity(Artist artist, ArtistUpdateInput input) {
-		input.getNames().ifPresent(artist::setNames);
-		input.getBio().ifPresent(artist::setBio);
-		input.getGenreIds().ifPresent(genreIds -> setGenresIfIsValid(artist, genreIds));
-		input.getImageUrl().ifPresent(artist::setImageUrl);
+		Optional.ofNullable(input.getNames()).ifPresent(artist::setNames);
+		Optional.ofNullable(input.getBio()).ifPresent(artist::setBio);
+		Optional.ofNullable(input.getGenreIds()).ifPresent(genreIds -> setGenresIfIsValid(artist, genreIds));
+		Optional.ofNullable(input.getImageUrl()).ifPresent(artist::setImageUrl);
 
 		return artist;
 	}
@@ -64,7 +64,7 @@ public class ArtistConverter {
 				.bio(artist.getBio())
 				.genreIds(artist.getGenreIds())
 				.imageUrl(artist.getImageUrl())
-				.build();
+			   .build();
 	}
 
 }

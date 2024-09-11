@@ -22,6 +22,7 @@ import br.com.uuu.json.input.language.LanguageUpdateInput;
 import br.com.uuu.json.output.language.LanguageOutput;
 import br.com.uuu.model.mongodb.entity.Language;
 import br.com.uuu.model.mongodb.repository.LanguageRepository;
+import br.com.uuu.model.mongodb.repository.LanguageRepositoryTest;
 
 class LanguageServiceTest {
 
@@ -43,33 +44,21 @@ class LanguageServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        languages = List.of(
-        		buildLanguage("1", "en_US", "Inglês Americano"),
-                buildLanguage("2", "pt_BR", "Português Brasileiro"),
-                buildLanguage("3", "ja_JP", "Japonês")
-        	);
-        languageCreateInputs = languages.stream().map(entity ->
-        	LanguageCreateInput.builder()
-        	.code(entity.getCode())
-        	.name(entity.getName())
-        	.build()
-        ).toList();
-        languageOutputs = languages.stream().map(entity ->
-        	LanguageOutput.builder()
-        	.id(entity.getId())
-        	.code(entity.getCode())
-        	.name(entity.getName())
-        	.build()
-        ).toList();
+        languages = LanguageRepositoryTest.getLanguages();
+        languageCreateInputs = languages.stream().map(language ->
+	        	LanguageCreateInput.builder()
+		        	.code(language.getCode())
+		        	.name(language.getName())
+	        	.build()
+	        ).toList();
+        languageOutputs = languages.stream().map(language ->
+	        	LanguageOutput.builder()
+		        	.id(language.getId())
+		        	.code(language.getCode())
+		        	.name(language.getName())
+	        	.build()
+	        ).toList();
     }
-
-    private Language buildLanguage(String id, String code, String name) {
-		var language = new Language();
-		language.setId(id);
-		language.setCode(code);
-		language.setName(name);
-        return language;
-	}
 
     private void checkLanguage(LanguageOutput output, LanguageOutput language) {
 		assertThat(output.getId()).isEqualTo(language.getId());
@@ -145,10 +134,10 @@ class LanguageServiceTest {
     	var updatedLanguage = languages.get(2);
     	var languageOutput = languageOutputs.get(2);
     	var languageUpdateInput =
-    			LanguageUpdateInput.builder()
-    			.code(Optional.of("ja_JP"))
-    			.name(Optional.of("Japonês"))
-    			.build();
+    		LanguageUpdateInput.builder()
+    			.code("en_GB")
+    			.name("Inglês Britânico")
+    		.build();
 
     	when(languageConverter.toEntity(any(Language.class), any(LanguageUpdateInput.class))).thenReturn(updatedLanguage);
         when(languageRepository.findById("1")).thenReturn(Optional.of(language));

@@ -2,6 +2,7 @@ package br.com.uuu.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -21,8 +22,8 @@ public class GenreConverter {
 	}
 
 	public Genre toEntity(Genre genre, GenreUpdateInput input) {
-		input.getName().ifPresent(genre::setName);
-		input.getDescription().ifPresent(genre::setDescription);
+		Optional.ofNullable(input.getName()).ifPresent(genre::setName);
+		Optional.ofNullable(input.getDescription()).ifPresent(genre::setDescription);
 
 		return genre;
 	}
@@ -40,7 +41,7 @@ public class GenreConverter {
 				.id(genre.getId())
 				.name(genre.getName())
 				.description(genre.getDescription())
-				.build();
+			   .build();
 	}
 
 }

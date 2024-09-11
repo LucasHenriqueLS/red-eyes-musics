@@ -49,8 +49,8 @@ public class AlbumServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         albums = AlbumRepositoryTest.getAlbums();
-        var counter = new AtomicInteger(1);
-        albums.forEach(album -> album.setId(String.valueOf(counter.getAndIncrement())));
+        var i = new AtomicInteger(1);
+        albums.forEach(album -> album.setId(String.valueOf(i.getAndIncrement())));
         albumCreateInputs = albums.stream().map(album ->
 		    	AlbumCreateInput.builder()
 					.title(album.getTitle())
@@ -62,7 +62,7 @@ public class AlbumServiceTest {
 				.build()
 			).toList();
         albumOutputs = albums.stream().map(album ->
-			    	AlbumOutput.builder()
+			    AlbumOutput.builder()
 			    	.id(album.getId())
 			    	.title(album.getTitle())
 					.releaseDate(album.getReleaseDate())
@@ -152,15 +152,15 @@ public class AlbumServiceTest {
     	var updatedAlbum = albums.get(2);
     	var albumOutput = albumOutputs.get(2);
     	var albumUpdateInput =
-    			AlbumUpdateInput.builder()
-    			.title(Optional.of("Thriller (Special Edition)"))
-    			.releaseDate(Optional.of(LocalDate.parse("1982-11-30")))
-    			.artistIds(Optional.of(List.of("a87179e9c79647a557f17b95")))
-    			.coverUrl(Optional.of("https://example.com/images/thriller_special_edition.jpg"))
-    			.genreIds(Optional.of(List.of("b969e7a595f1d87174579c", "c87179e9c79647a557f17b95", "g87179e9c79647a557f17b95")))
-    			.recordCompanyName(Optional.of("Epic Records"))
-    			.build();
-    	
+    		AlbumUpdateInput.builder()
+    			.title("Thriller (Special Edition)")
+    			.releaseDate(LocalDate.parse("1982-11-30"))
+    			.artistIds(List.of("a87179e9c79647a557f17b95"))
+    			.coverUrl("https://example.com/images/thriller_special_edition.jpg")
+    			.genreIds(List.of("b969e7a595f1d87174579c", "c87179e9c79647a557f17b95", "g87179e9c79647a557f17b95"))
+    			.recordCompanyName("Epic Records")
+    		.build();
+
     	when(albumConverter.toEntity(album, albumUpdateInput)).thenReturn(updatedAlbum);
         when(albumRepository.findById("1")).thenReturn(Optional.of(album));
         when(albumRepository.save(updatedAlbum)).thenReturn(updatedAlbum);

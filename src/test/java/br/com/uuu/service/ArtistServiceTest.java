@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import br.com.uuu.json.input.artist.ArtistUpdateInput;
 import br.com.uuu.json.output.artist.ArtistOutput;
 import br.com.uuu.model.mongodb.entity.Artist;
 import br.com.uuu.model.mongodb.repository.ArtistRepository;
+import br.com.uuu.model.mongodb.repository.ArtistRepositoryTest;
 
 class ArtistServiceTest {
 
@@ -44,39 +46,27 @@ class ArtistServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        artists = List.of(
-        		buildArtist("1", List.of("Michael Jackson", "Michael Joseph Jackson"), "Michael Jackson foi um cantor, compositor e dançarino norte-americano, amplamente considerado o Rei do Pop e um dos artistas mais influentes da história da música.", List.of("a87179e9c79647a557f17b95", "b969e7a595f1d87174579c"), "https://example.com/images/michael_jackson.jpg"),
-                buildArtist("2", List.of("Ariana Grande", "Ariana Grande-Butera"), "Ariana Grande é uma cantora e atriz norte-americana reconhecida por sua poderosa voz e influente presença na cultura pop.", List.of("c87179e9c79647a557f17b95", "d969e7a595f1d87174579c"), "https://example.com/images/ariana_grande.jpg"),
-                buildArtist("3", List.of("Hans Zimmer", "Hans Florian Zimmer"), "Hans Zimmer é um renomado compositor de trilhas sonoras para cinema, famoso por seu trabalho em filmes como 'O Rei Leão' e 'Duna'.", List.of("e87179e9c79647a557f17b95", "f969e7a595f1d87174579c"), "https://example.com/images/hans_zimmer.jpg")
-        	);
+        artists = ArtistRepositoryTest.getArtists();
+        var i = new AtomicInteger(1);
+        artists.forEach(artist -> artist.setId(String.valueOf(i.getAndIncrement())));
         artistCreateInputs = artists.stream().map(entity ->
-        	ArtistCreateInput.builder()
-			.names(entity.getNames())
-			.bio(entity.getBio())
-			.genreIds(entity.getGenreIds())
-			.imageUrl(entity.getImageUrl())
-			.build()
-		).toList();
+        		ArtistCreateInput.builder()
+        			.names(entity.getNames())
+        			.bio(entity.getBio())
+        			.genreIds(entity.getGenreIds())
+        			.imageUrl(entity.getImageUrl())
+        		.build()
+        	).toList();
         artistOutputs = artists.stream().map(entity ->
-        	ArtistOutput.builder()
-        	.id(entity.getId())
-        	.names(entity.getNames())
-			.bio(entity.getBio())
-			.genreIds(entity.getGenreIds())
-			.imageUrl(entity.getImageUrl())
-			.build()
-        ).toList();
+        		ArtistOutput.builder()
+        			.id(entity.getId())
+        			.names(entity.getNames())
+        			.bio(entity.getBio())
+        			.genreIds(entity.getGenreIds())
+        			.imageUrl(entity.getImageUrl())
+        		.build()
+        	).toList();
     }
-
-    private Artist buildArtist(String id, List<String> names, String bio, List<String> genreIds, String imageUrl) {
-		var artist = new Artist();
-		artist.setId(id);
-		artist.setNames(names);
-		artist.setBio(bio);
-		artist.setGenreIds(genreIds);
-		artist.setImageUrl(imageUrl);
-        return artist;
-	}
 
     private void checkArtist(ArtistOutput output, ArtistOutput artist) {
 		assertThat(output.getId()).isEqualTo(artist.getId());
@@ -154,12 +144,12 @@ class ArtistServiceTest {
     	var updatedArtist = artists.get(2);
     	var artistOutput = artistOutputs.get(2);
     	var artistUpdateInput =
-    			ArtistUpdateInput.builder()
-    			.names(Optional.of(List.of("Michael Jackson", "Michael Joseph Jackson", "MJ", "King of Pop", "The Gloved One")))
-    			.bio(Optional.of("Michael Jackson foi um artista multifacetado, conhecido por redefinir o cenário da música pop com seus movimentos de dança icônicos, videoclipes revolucionários e uma voz única."))
-    			.genreIds(Optional.of(List.of("g87179e9c79647a557f17b95", "h969e7a595f1d87174579c")))
-    			.imageUrl(Optional.of("https://example.com/images/michael_joseph_jackson.jpg"))
-    			.build();
+    		ArtistUpdateInput.builder()
+    			.names(List.of("Michael Jackson", "Michael Joseph Jackson", "MJ", "King of Pop", "The Gloved One"))
+    			.bio("Michael Jackson foi um artista multifacetado, conhecido por redefinir o cenário da música pop com seus movimentos de dança icônicos, videoclipes revolucionários e uma voz única.")
+    			.genreIds(List.of("g87179e9c79647a557f17b95", "h969e7a595f1d87174579c"))
+    			.imageUrl("https://example.com/images/michael_joseph_jackson.jpg")
+    		.build();
 
     	when(artistConverter.toEntity(artist, artistUpdateInput)).thenReturn(updatedArtist);
         when(artistRepository.findById("1")).thenReturn(Optional.of(artist));

@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -36,6 +35,7 @@ import br.com.uuu.json.input.genre.GenreCreateInput;
 import br.com.uuu.json.input.genre.GenreUpdateInput;
 import br.com.uuu.json.output.genre.GenreOutput;
 import br.com.uuu.model.mongodb.entity.Genre;
+import br.com.uuu.model.mongodb.repository.GenreRepositoryTest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,13 +64,18 @@ class GenreControllerTest {
 
     @BeforeAll
     public void setup(){
-    	genreCreateInputs = List.of(
-    			GenreCreateInput.builder().name("Clássica").description("Música de concerto, chamada popularmente de música clássica ou música erudita, é a principal variedade de música produzida ou enraizada nas tradições da música secular e litúrgica ocidental.").build(),
-    			GenreCreateInput.builder().name("Pop").description("A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido.").build(),
-    			GenreCreateInput.builder().name("J-Rock").description("Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão.").build()
-    		);
-        genres = genreCreateInputs.stream().map(input -> genreConverter.toEntity(new Genre(), input)).collect(Collectors.toList());
-        genreOutputs = genres.stream().map(entity -> genreConverter.toOutput(entity)).collect(Collectors.toList());
+    	setupGenres();
+    }
+
+    private void setupGenres() {
+    	genreCreateInputs = GenreRepositoryTest.getGenres().stream().map(genre -> {
+        	return GenreCreateInput.builder()
+        		.name(genre.getName())
+        		.description(genre.getDescription())
+        	.build();
+        }).toList();
+    	genres = genreCreateInputs.stream().map(input -> genreConverter.toEntity(new Genre(), input)).collect(Collectors.toList());
+    	genreOutputs = genres.stream().map(entity -> genreConverter.toOutput(entity)).collect(Collectors.toList());
     }
 
     private void checkGenreOutput(ResultActions response, GenreOutput genreOutput, String jsonPath) throws Exception {
@@ -116,12 +121,29 @@ class GenreControllerTest {
                 .content("{}"))
                 .andExpect(status().isBadRequest());
 
-		var errorResponse = ErrorResponse.badRequest("{name=não pode ser nulo ou vazio}");
+		var errorResponse = ErrorResponse.badRequest("{name=não pode ser nulo, vazio ou conter somente espaços em branco}");
 		checkErrorResponse(response, errorResponse, "$");
     }
 
 	@Test
 	@Order(3)
+    void givenInvalidGenreCreateInputWithAllFieldsInvalidWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var genreUpdateInput =
+			GenreCreateInput.builder()
+				.name(" ")
+			.build();
+
+		var response = mockMvc.perform(post("/genres")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(genreUpdateInput)))
+                .andExpect(status().isBadRequest());
+
+		var errorResponse = ErrorResponse.badRequest("{name=não pode ser nulo, vazio ou conter somente espaços em branco}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(4)
     void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
 		getAll();
     }
@@ -139,7 +161,7 @@ class GenreControllerTest {
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
     void givenValidGenreIdWhenGetByIdAfterPostRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
         getById();
     }
@@ -153,7 +175,7 @@ class GenreControllerTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
     void givenInvalidGenreIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
     	var id = "invalid_id";
 		var response = mockMvc.perform(get("/genres/get-by-id/{id}", id))
@@ -164,29 +186,28 @@ class GenreControllerTest {
     }
 
 	@Test
-	@Order(6)
+	@Order(7)
     void givenValidGenreUpdateInputWhenPutRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
-		var name = "Rock";
-		var description = "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido.";
-		var genreUpdateInput = GenreUpdateInput.builder().name(Optional.of(name)).description(Optional.of(description)).build();
+		var genreUpdateInput =
+			GenreUpdateInput.builder()
+				.name("Pop")
+				.description("O gênero Pop evoluiu ao longo das décadas, incorporando novos estilos musicais e tecnologias, mantendo sua essência acessível e cativante para o público em massa.")
+			.build();
 
         var response = mockMvc.perform(put("/genres/{id}", genres.get(0).getId())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(genreUpdateInput)))
             .andExpect(status().isOk());
 
-        var updatedGenre = genres.get(0);
-        updatedGenre.setName(name);
-        updatedGenre.setDescription(description);
-        var updatedGenreOutput = genreOutputs.get(0);
-        updatedGenreOutput.setName(name);
-        updatedGenreOutput.setDescription(description);
+        genreConverter.toEntity(genres.get(0), genreUpdateInput);
+        var updatedGenreOutput = genreConverter.toOutput(genres.get(0));
+        genreOutputs.set(0, updatedGenreOutput);
 
         checkGenreOutput(response, updatedGenreOutput, "$");
     }
 
 	@Test
-	@Order(7)
+	@Order(8)
     void givenValidLanguageUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         var genreOutput = genreOutputs.get(0);
 
@@ -196,21 +217,38 @@ class GenreControllerTest {
             .andExpect(status().isOk());
         checkGenreOutput(response, genreOutput, "$");
     }
+	
+	@Test
+	@Order(9)
+    void givenInvalidGenreUpdateInputWithAllFieldsInvalidWhenPutRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var genreUpdateInput =
+			GenreUpdateInput.builder()
+				.name(" ")
+			.build();
+
+        var response = mockMvc.perform(put("/genres/{id}", genres.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(genreUpdateInput)))
+            .andExpect(status().isBadRequest());
+
+        var errorResponse = ErrorResponse.badRequest("{name=não pode ser vazio ou conter somente espaços em branco se não for nulo}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
 
 	@Test
-	@Order(8)
+	@Order(9)
     void whenGetRequestAfterPutRequestThenReturnsOkStatusAndListOfGenreOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(9)
+	@Order(10)
     void givenValidGenreIdWhenGetByIdAfterPutRequestThenReturnsOkStatusAndGenreOutput() throws Exception {
         getById();
     }
 
 	@Test
-	@Order(10)
+	@Order(11)
     void givenValidGenreIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/genres/{id}", genres.get(0).getId()))
             .andExpect(status().isOk());
@@ -252,7 +290,7 @@ class GenreControllerTest {
 		this.genreConverter = genreConverter;
 		this.mockMvc = mockMvc;
 		this.objectMapper = objectMapper;
-		setup();
+		setupGenres();
 		givenValidGenreCreateInputWhenPostRequestThenReturnsCreatedStatusAndGenreOutput();
 		return genres;
 	}

@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -36,6 +35,7 @@ import br.com.uuu.json.input.language.LanguageCreateInput;
 import br.com.uuu.json.input.language.LanguageUpdateInput;
 import br.com.uuu.json.output.language.LanguageOutput;
 import br.com.uuu.model.mongodb.entity.Language;
+import br.com.uuu.model.mongodb.repository.LanguageRepositoryTest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,15 +64,20 @@ class LanguageControllerTest {
 
     @BeforeAll
     public void setup(){
-    	languageCreateInputs = List.of(
-    			LanguageCreateInput.builder().code("en_US").name("Inglês Americano").build(),
-    			LanguageCreateInput.builder().code("pt_BR").name("Português Brasileiro").build(),
-    			LanguageCreateInput.builder().code("ja_JP").name("Japonês").build()
-    		);
+    	setupLanguage();
+    }
+
+    private void setupLanguage() {
+    	languageCreateInputs = LanguageRepositoryTest.getLanguages().stream().map(language -> {
+        	return LanguageCreateInput.builder()
+        		.code(language.getCode())
+        		.name(language.getName())
+        	.build();
+        }).toList();
     	languages = languageCreateInputs.stream().map(input -> languageConverter.toEntity(new Language(), input)).collect(Collectors.toList());
     	languageOutputs = languages.stream().map(entity -> languageConverter.toOutput(entity)).collect(Collectors.toList());
     }
-    
+
     private void checkLanguageOutput(ResultActions response, LanguageOutput languageOutput, String jsonPath) throws Exception {
     	response
     	.andExpect(jsonPath(String.format("%s.id", jsonPath)).value(languageOutput.getId()))
@@ -116,12 +121,30 @@ class LanguageControllerTest {
                 .content("{}"))
                 .andExpect(status().isBadRequest());
 
-		var errorResponse = ErrorResponse.badRequest("{code=não pode ser nulo ou vazio, name=não pode ser nulo ou vazio}");
+		var errorResponse = ErrorResponse.badRequest("{code=não pode ser nulo, vazio ou conter somente espaços em branco, name=não pode ser nulo, vazio ou conter somente espaços em branco}");
 		checkErrorResponse(response, errorResponse, "$");
     }
 
 	@Test
 	@Order(3)
+    void givenInvalidLanguageCreateInputWithAllFieldsInvalidWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var languageCreateInput =
+			LanguageCreateInput.builder()
+				.code(" ")
+				.name(" ")
+			.build();
+
+		var response = mockMvc.perform(post("/languages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(languageCreateInput)))
+                .andExpect(status().isBadRequest());
+
+		var errorResponse = ErrorResponse.badRequest("{code=não pode ser nulo, vazio ou conter somente espaços em branco, name=não pode ser nulo, vazio ou conter somente espaços em branco}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(4)
     void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		getAll();
     }
@@ -139,7 +162,7 @@ class LanguageControllerTest {
 	}
 	
 	@Test
-	@Order(4)
+	@Order(5)
     void givenValidLanguageIdWhenGetByIdAfterPostRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         getById();
     }
@@ -153,7 +176,7 @@ class LanguageControllerTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
     void givenInvalidLanguageIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
     	var id = "invalid_id";
 		var response = mockMvc.perform(get("/languages/get-by-id/{id}", id))
@@ -164,30 +187,29 @@ class LanguageControllerTest {
     }
 
 	@Test
-	@Order(6)
+	@Order(7)
     void givenValidLanguageUpdateInputWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
-		var code = "en_GB";
-		var name = "Inglês Britânico";
-		var languageUpdateInput = LanguageUpdateInput.builder().code(Optional.of(code)).name(Optional.of(name)).build();
+		var languageUpdateInput =
+			LanguageUpdateInput.builder()
+				.code("en_GB")
+				.name("Inglês Britânico")
+			.build();
 
         var response = mockMvc.perform(put("/languages/{id}", languages.get(0).getId())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(languageUpdateInput)))
             .andExpect(status().isOk());
-
-        var updatedLanguage = languages.get(0);
-        updatedLanguage.setCode(code);
-        updatedLanguage.setName(name);
-        var updatedLanguageOutput = languageOutputs.get(0);
-        updatedLanguageOutput.setCode(code);
-        updatedLanguageOutput.setName(name);
+        
+        languageConverter.toEntity(languages.get(0), languageUpdateInput);
+        var updatedLanguageOutput = languageConverter.toOutput(languages.get(0));
+        languageOutputs.set(0, updatedLanguageOutput);
 
         checkLanguageOutput(response, updatedLanguageOutput, "$");
     }
 
 	@Test
-	@Order(7)
-    void givenEmptyValidLanguageUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
+	@Order(8)
+    void givenValidLanguageUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         var languageOutput = languageOutputs.get(0);
 
         var response = mockMvc.perform(put("/languages/{id}", languages.get(0).getId())
@@ -198,19 +220,37 @@ class LanguageControllerTest {
     }
 
 	@Test
-	@Order(8)
+	@Order(9)
+    void givenInvalidLanguageUpdateInputWithAllFieldsInvalidWhenPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
+		var languageUpdateInput =
+			LanguageUpdateInput.builder()
+				.code(" ")
+				.name(" ")
+			.build();
+
+        var response = mockMvc.perform(put("/languages/{id}", languages.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(languageUpdateInput)))
+            .andExpect(status().isBadRequest());
+        
+        var errorResponse = ErrorResponse.badRequest("{code=não pode ser vazio ou conter somente espaços em branco se não for nulo, name=não pode ser vazio ou conter somente espaços em branco se não for nulo}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(10)
     void whenGetAllRequestAfterPutRequestThenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(9)
+	@Order(11)
     void givenValidGenreIdWhenGetById_afterPutRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         getById();
     }
 
 	@Test
-	@Order(10)
+	@Order(12)
     void givenValidLanguageIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/languages/{id}", languages.get(0).getId()))
             .andExpect(status().isOk());
@@ -220,20 +260,20 @@ class LanguageControllerTest {
     }
 
 	@Test
-	@Order(11)
+	@Order(13)
     void givenInvalidLanguageIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/languages/{id}", "invalid_id"))
             .andExpect(status().isOk());
     }
 
 	@Test
-	@Order(12)
+	@Order(14)
     void whenGetAllRequestAfterDeleteRequestThenReturnsOkStatusAndListOfLanguageOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(13)
+	@Order(15)
     void givenValidLanguageIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndLanguageOutput() throws Exception {
         getById();
     }

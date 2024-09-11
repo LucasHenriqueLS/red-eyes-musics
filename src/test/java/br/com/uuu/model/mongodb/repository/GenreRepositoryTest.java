@@ -2,7 +2,6 @@ package br.com.uuu.model.mongodb.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,23 +15,28 @@ import br.com.uuu.model.mongodb.entity.Genre;
 
 @DataMongoTest
 @ActiveProfiles("unit-test")
-class GenreRepositoryTest {
+public class GenreRepositoryTest {
 
 	@Autowired
     private GenreRepository genreRepository;
 
     private List<Genre> genres;
     
+    public static List<Genre> getGenres() {
+    	return List.of(
+    			buildGenre("Pop", "O gênero Pop é conhecido por suas melodias cativantes e estrutura musical voltada para o público em geral. Abrange uma variedade de estilos e é popular globalmente."),
+    	        buildGenre("R&B", "Rhythm and Blues (R&B) combina elementos de soul, funk e hip-hop, com foco em vocais suaves e ritmos melódicos."),
+    	        buildGenre("Trilha Sonora", "Gênero que abrange músicas compostas para filmes, séries e outras formas de mídia. Compositores criam atmosferas que complementam as cenas visuais.")	
+    		);
+    }
+
     @BeforeEach
     void setUp() {
         genreRepository.deleteAll();
-        genres = new ArrayList<>();
-        genres.add(buildGenre("Clássica", "Música de concerto, chamada popularmente de música clássica ou música erudita, é a principal variedade de música produzida ou enraizada nas tradições da música secular e litúrgica ocidental."));
-        genres.add(buildGenre("Pop", "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido."));
-        genres.add(buildGenre("J-Rock", "Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão."));
+        genres = getGenres();
     }
 
-	private Genre buildGenre(String name, String description) {
+	private static Genre buildGenre(String name, String description) {
 		var genre = new Genre();
 		genre.setName(name);
 		genre.setDescription(description);

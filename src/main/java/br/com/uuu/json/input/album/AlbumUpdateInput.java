@@ -2,9 +2,11 @@ package br.com.uuu.json.input.album;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,30 +20,26 @@ import lombok.ToString;
 @Builder
 public class AlbumUpdateInput {
 
-	@Schema(description = "Título do álbum", example = "Temple of Love")
-	private Optional<String> title;
+	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
+	@Schema(description = "Título do álbum", example = "Thriller")
+	private String title;
 
-	@Schema(description = "Data de lançamento do álbum", example = "2006-06-30")
-	private Optional<LocalDate> releaseDate;
+	@PastOrPresent(message = "deve ser a data atual ou uma data passada")
+	@Schema(description = "Data de lançamento do álbum", example = "1982-11-30")
+	private LocalDate releaseDate;
 
-	@Schema(description = "IDs dos artistas", example = "[\"64957a557f1d87179e9c77b9\", \"95f1d87179e7a54579c77b96\"]")
-	private Optional<List<String>> artistIds;
+	@Size(min = 1, message = "não pode ser vazio se não for nulo")
+	@Schema(description = "IDs dos artistas", example = "[\"a87179e9c79647a557f17b95\"]")
+	private List<String> artistIds;
 
-	@Schema(description = "Link da imagem da capa do álbum", example = "????")
-	private Optional<String> coverUrl;
+	@Schema(description = "Link da imagem da capa do álbum", example = "https://example.com/images/thriller.jpg")
+	private String coverUrl;
 
-	@Schema(description = "IDs dos gêneros", example = "[\"d87179e9c79647a557f17b95\", \"77b969e7a595f1d87174579c\"]")
-	private Optional<List<String>> genreIds;
+	@Size(min = 1, message = "não pode ser vazio se não for nulo")
+	@Schema(description = "IDs dos gêneros", example = "[\"b969e7a595f1d87174579c\", \"c87179e9c79647a557f17b95\"]")
+	private List<String> genreIds;
 
-	@Schema(description = "Nome da gravadora", example = "Sony Music")
-	private Optional<String> recordCompanyName;
-	
-	public AlbumUpdateInput() {
-		title = Optional.empty();
-		releaseDate = Optional.empty();
-		artistIds = Optional.empty();
-		coverUrl = Optional.empty();
-		genreIds = Optional.empty();
-		recordCompanyName = Optional.empty();
-	}
+	@Schema(description = "Nome da gravadora", example = "Epic Records")
+	private String recordCompanyName;
+
 }

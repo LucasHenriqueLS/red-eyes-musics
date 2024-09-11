@@ -23,6 +23,7 @@ import br.com.uuu.json.input.genre.GenreUpdateInput;
 import br.com.uuu.json.output.genre.GenreOutput;
 import br.com.uuu.model.mongodb.entity.Genre;
 import br.com.uuu.model.mongodb.repository.GenreRepository;
+import br.com.uuu.model.mongodb.repository.GenreRepositoryTest;
 
 class GenreServiceTest {
 
@@ -44,33 +45,21 @@ class GenreServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        genres = List.of(
-        		buildGenre("1", "Clássica", "Música de concerto, chamada popularmente de música clássica ou música erudita, é a principal variedade de música produzida ou enraizada nas tradições da música secular e litúrgica ocidental."),
-                buildGenre("2", "Pop", "A música pop é um gênero da música popular que se originou durante a década de 1950 nos Estados Unidos e Reino Unido."),
-                buildGenre("3", "J-Rock", "Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão.")
-        	);
-        genreCreateInputs = genres.stream().map(entity ->
-        	GenreCreateInput.builder()
-			.name(entity.getName())
-			.description(entity.getDescription())
-			.build()
-		).toList();
-        genreOutputs = genres.stream().map(entity ->
-        	GenreOutput.builder()
-        	.id(entity.getId())
-        	.name(entity.getName())
-        	.description(entity.getDescription())
-        	.build()
-        ).toList();
+        genres = GenreRepositoryTest.getGenres();
+        genreCreateInputs = genres.stream().map(genre ->
+        		GenreCreateInput.builder()
+					.name(genre.getName())
+					.description(genre.getDescription())
+				.build()
+			).toList();
+        genreOutputs = genres.stream().map(genre ->
+	        	GenreOutput.builder()
+		        	.id(genre.getId())
+		        	.name(genre.getName())
+		        	.description(genre.getDescription())
+	        	.build()
+	        ).toList();
     }
-
-    private Genre buildGenre(String id, String name, String description) {
-    	var genre = new Genre();
-    	genre.setId(id);
-    	genre.setDescription(description);
-    	genre.setName(name);
-        return genre;
-	}
 
     private void checkGenre(GenreOutput output, GenreOutput genre) {
 		assertThat(output.getId()).isEqualTo(genre.getId());
@@ -146,10 +135,10 @@ class GenreServiceTest {
     	var updatedGenre = genres.get(2);
     	var genreOutput = genreOutputs.get(2);
     	var genreUpdateInput =
-    			GenreUpdateInput.builder()
-    			.name(Optional.of("J-Rock"))
-    			.description(Optional.of("Rock japonês, também conhecido pela abreviatura J-rock é a música rock proveniente do Japão."))
-    			.build();
+    		GenreUpdateInput.builder()
+    			.name("Pop")
+    			.description("O gênero Pop evoluiu ao longo das décadas, incorporando novos estilos musicais e tecnologias, mantendo sua essência acessível e cativante para o público em massa.")
+    		.build();
 
     	when(genreConverter.toEntity(genre, genreUpdateInput)).thenReturn(updatedGenre);
         when(genreRepository.findById("1")).thenReturn(Optional.of(genre));

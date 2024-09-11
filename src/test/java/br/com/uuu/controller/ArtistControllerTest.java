@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -38,6 +38,7 @@ import br.com.uuu.json.input.artist.ArtistUpdateInput;
 import br.com.uuu.json.output.artist.ArtistOutput;
 import br.com.uuu.model.mongodb.entity.Artist;
 import br.com.uuu.model.mongodb.entity.Genre;
+import br.com.uuu.model.mongodb.repository.ArtistRepositoryTest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -80,11 +81,15 @@ class ArtistControllerTest {
     }
 
     private void setupArtists(List<Genre> genres) {
-    	artistCreateInputs = List.of(
-    			ArtistCreateInput.builder().names(List.of("Michael Jackson", "Michael Joseph Jackson")).bio("Michael Jackson foi um cantor, compositor e dançarino norte-americano, amplamente considerado o Rei do Pop e um dos artistas mais influentes da história da música.").genreIds(List.of(genres.get(0).getId(), genres.get(1).getId())).imageUrl("https://example.com/images/michael_jackson.jpg").build(),
-    			ArtistCreateInput.builder().names(List.of("Ariana Grande", "Ariana Grande-Butera")).bio("Ariana Grande é uma cantora e atriz norte-americana reconhecida por sua poderosa voz e influente presença na cultura pop.").genreIds(List.of(genres.get(0).getId(), genres.get(2).getId())).imageUrl("https://example.com/images/ariana_grande.jpg").build(),
-    			ArtistCreateInput.builder().names(List.of("Hans Zimmer", "Hans Florian Zimmer")).bio("Hans Zimmer é um renomado compositor de trilhas sonoras para cinema, famoso por seu trabalho em filmes como 'O Rei Leão' e 'Duna'.").genreIds(List.of(genres.get(1).getId(), genres.get(2).getId())).imageUrl("https://example.com/images/hans_zimmer.jpg").build()
-    		);
+    	var random = new Random();	
+        artistCreateInputs = ArtistRepositoryTest.getArtists().stream().map(artist -> {
+        	return ArtistCreateInput.builder()
+        		.names(artist.getNames())
+        		.bio(artist.getBio())
+        		.genreIds(List.of(genres.get(random.nextInt(2)).getId(), genres.get(random.nextInt(2)).getId()))
+        		.imageUrl(artist.getImageUrl())
+        	.build();
+        }).toList();
     	artists = artistCreateInputs.stream().map(input -> artistConverter.toEntity(new Artist(), input)).collect(Collectors.toList());
     	artistOutputs = artists.stream().map(entity -> artistConverter.toOutput(entity)).collect(Collectors.toList());
     }
@@ -146,18 +151,36 @@ class ArtistControllerTest {
 		var errorResponse = ErrorResponse.badRequest("{genreIds=não pode ser nulo ou vazio, names=não pode ser nulo ou vazio}");
 		checkErrorResponse(response, errorResponse, "$");
     }
-
+	
 	@Test
 	@Order(3)
+    void givenInvalidArtistCreateInputWithAllFieldsInvalidWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var artistCreateInput =
+			ArtistCreateInput.builder()
+				.names(List.of())
+				.genreIds(List.of())
+			.build();
+
+		var response = mockMvc.perform(post("/artists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(artistCreateInput)))
+                .andExpect(status().isBadRequest());
+
+		var errorResponse = ErrorResponse.badRequest("{genreIds=não pode ser nulo ou vazio, names=não pode ser nulo ou vazio}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(4)
     void givenInvalidArtistCreateInputWithInvalidGenreIdsWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
 		var artistUpdateInput =
-				ArtistCreateInput.builder()
-				.names(List.of("Michael Jackson", "Michael Joseph Jackson"))
-				.bio("Michael Jackson foi um cantor, compositor e dançarino norte-americano, amplamente considerado o Rei do Pop e um dos artistas mais influentes da história da música.")
-				.genreIds(List.of("invalid_id_1","invalid_id_2"))
-				.imageUrl("https://example.com/images/michael_jackson.jpg")
-				.build();
-		
+			ArtistCreateInput.builder()
+				.names(artists.get(0).getNames())
+				.bio(artists.get(0).getBio())
+				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
+				.imageUrl(artists.get(0).getImageUrl())
+			.build();
+
 		var response = mockMvc.perform(post("/artists")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(artistUpdateInput)))
@@ -168,7 +191,7 @@ class ArtistControllerTest {
     }
 
 	@Test
-	@Order(4)
+	@Order(5)
     void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfArtistOutputs() throws Exception {
 		getAll();
     }
@@ -186,7 +209,7 @@ class ArtistControllerTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
     void givenValidArtistIdWhenGetByIdAfterPostRequesThenReturnsOkStatusAndArtistOutput() throws Exception {
         getById();
     }
@@ -200,7 +223,7 @@ class ArtistControllerTest {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
     void givenInvalidArtistIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
     	var id = "invalid_id";
 		var response = mockMvc.perform(get("/artists/get-by-id/{id}", id))
@@ -211,35 +234,30 @@ class ArtistControllerTest {
     }
 
 	@Test
-	@Order(7)
+	@Order(8)
     void givenValidArtistUpdateInputWhenPutRequestThenReturnsOkStatusAndArtistOutput() throws Exception {
-		var names = List.of("Michael Jackson", "Michael Joseph Jackson", "MJ", "King of Pop", "The Gloved One");
-		var bio = "Michael Jackson foi um artista multifacetado, conhecido por redefinir o cenário da música pop com seus movimentos de dança icônicos, videoclipes revolucionários e uma voz única.";
-		var genreIds = List.of(genres.get(1).getId(), genres.get(2).getId());
-		var imageUrl = "https://example.com/images/michael_joseph_jackson.jpg";
-		var artistUpdateInput = ArtistUpdateInput.builder().names(Optional.of(names)).bio(Optional.of(bio)).genreIds(Optional.of(genreIds)).imageUrl(Optional.of(imageUrl)).build();
+		var artistUpdateInput =
+			ArtistUpdateInput.builder()
+				.names(List.of("Michael Jackson", "Michael Joseph Jackson", "MJ", "King of Pop", "The Gloved One"))
+				.bio("Michael Jackson foi um artista multifacetado, conhecido por redefinir o cenário da música pop com seus movimentos de dança icônicos, videoclipes revolucionários e uma voz única.")
+				.genreIds(List.of(genres.get(1).getId(), genres.get(2).getId()))
+				.imageUrl("https://example.com/images/michael_joseph_jackson.jpg")
+			.build();
 
         var response = mockMvc.perform(put("/artists/{id}", artists.get(0).getId())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(artistUpdateInput)))
             .andExpect(status().isOk());
 
-        var updatedArtist = artists.get(0);
-        updatedArtist.setNames(names);
-        updatedArtist.setBio(bio);
-        updatedArtist.setGenreIds(genreIds);
-        updatedArtist.setImageUrl(imageUrl);
-        var updatedArtistOutput = artistOutputs.get(0);
-        updatedArtistOutput.setNames(names);
-        updatedArtistOutput.setBio(bio);
-        updatedArtistOutput.setGenreIds(genreIds);
-        updatedArtistOutput.setImageUrl(imageUrl);
+        artistConverter.toEntity(artists.get(0), artistUpdateInput);
+        var updatedArtistOutput = artistConverter.toOutput(artists.get(0));
+        artistOutputs.set(0, updatedArtistOutput);
 
         checkArtistOutput(response, updatedArtistOutput, "$");
     }
 
 	@Test
-	@Order(8)
+	@Order(9)
     void givenValidArtistUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndArtistOutput() throws Exception {
         var artistOutput = artistOutputs.get(0);
 
@@ -251,9 +269,30 @@ class ArtistControllerTest {
     }
 
 	@Test
-	@Order(9)
+	@Order(10)
+    void givenInvalidArtistUpdateInputWithAllFieldsInvalidWhenPutRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var artistUpdateInput =
+			ArtistUpdateInput.builder()
+				.names(List.of())
+				.genreIds(List.of())
+			.build();
+
+        var response = mockMvc.perform(put("/artists/{id}", artists.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(artistUpdateInput)))
+            .andExpect(status().isBadRequest());
+
+        var errorResponse = ErrorResponse.badRequest("{genreIds=não pode ser vazio se não for nulo, names=não pode ser vazio se não for nulo}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(11)
     void givenInvalidArtistUpdateInputWithInvalidGenreIdsWhenPutRequestThenReturnsOkStatusAndArtistOutput() throws Exception {
-		var artistUpdateInput = ArtistUpdateInput.builder().genreIds(Optional.of(List.of("invalid_id_1","invalid_id_2"))).build();
+		var artistUpdateInput =
+			ArtistUpdateInput.builder()
+				.genreIds(List.of("invalid_id_1","invalid_id_2"))
+			.build();
 
         var response = mockMvc.perform(put("/artists/{id}", artists.get(0).getId())
             .contentType(MediaType.APPLICATION_JSON)
@@ -265,19 +304,19 @@ class ArtistControllerTest {
     }
 
 	@Test
-	@Order(10)
+	@Order(12)
     void whenGetAllRequestAfterPutRequestThenReturnsOkStatusAndListOfArtistOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(11)
+	@Order(13)
     void givenValidGenreIdWhenGetByIdAfterPutRequestThenReturnsOkStatusAndArtistOutput() throws Exception {
         getById();
     }
 
 	@Test
-	@Order(12)
+	@Order(14)
     void givenValidArtistIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/artists/{id}", artists.get(0).getId()))
             .andExpect(status().isOk());
@@ -287,20 +326,20 @@ class ArtistControllerTest {
     }
 
 	@Test
-	@Order(13)
+	@Order(15)
     void givenInvalidArtistIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/artists/{id}", "invalid_id"))
             .andExpect(status().isOk());
     }
 
 	@Test
-	@Order(14)
+	@Order(16)
     void whenGetAllRequestAfterDeleteRequestThenReturnsOkStatusAndListOfArtistOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(15)
+	@Order(17)
     void givenValidArtistIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndArtistOutput() throws Exception {
         getById();
     }
