@@ -83,7 +83,10 @@ class AlbumControllerTest {
     public void setup() throws Exception {
     	genres = GenreControllerTest.setupGenres(mockMvc, objectMapper, genreConverter);
     	artists = ArtistControllerTest.setupArtist(mockMvc, objectMapper, artistConverter, genres);
+    	setupArtists(artists, genres);
+    }
 
+    private void setupArtists(List<Artist> artists, List<Genre> genres) {
     	var i = new AtomicInteger(0);
     	var random = new Random();	
         albumCreateInputs = AlbumRepositoryTest.getAlbums().stream().map(album -> {
