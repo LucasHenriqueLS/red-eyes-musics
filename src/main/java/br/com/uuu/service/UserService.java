@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.uuu.converter.UserConverter;
+import br.com.uuu.json.dto.user.UserIdDTO;
 import br.com.uuu.json.input.user.UserCreateInput;
 import br.com.uuu.model.mongodb.entity.User;
 import br.com.uuu.model.mongodb.repository.UserRepository;
@@ -29,6 +30,11 @@ public class UserService {
 
 	public Boolean existsById(String id) {
 		return userRepository.existsById(id);
+	}
+
+	public List<String> getAllIdsNotFound(List<String> ids) {
+		var allIdsFound = userRepository.findAllByIdIn(ids).stream().map(UserIdDTO::id).toList();
+        return ids.stream().filter(id -> !allIdsFound.contains(id)).toList();
 	}
 
 }

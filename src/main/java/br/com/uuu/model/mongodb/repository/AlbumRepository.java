@@ -1,9 +1,6 @@
 package br.com.uuu.model.mongodb.repository;
 
-import java.util.List;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
 import br.com.uuu.model.mongodb.entity.Album;
 

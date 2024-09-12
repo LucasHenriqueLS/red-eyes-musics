@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import br.com.uuu.model.mongodb.util.DetailsByLanguageId;
+import br.com.uuu.model.mongodb.util.SongDetails;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,7 +34,7 @@ public class Song {
 	
 	private String originalLanguageId;
 	
-	private Map<String, DetailsByLanguageId> detailsByLanguageId;
+	private Map<String, SongDetails> detailsByLanguageId;
 	
 	private Integer durationInSeconds;
 	

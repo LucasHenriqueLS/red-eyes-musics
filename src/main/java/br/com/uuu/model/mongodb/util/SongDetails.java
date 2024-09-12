@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class DetailsByLanguageId {
+public class SongDetails {
 
 	private String title;
 	
