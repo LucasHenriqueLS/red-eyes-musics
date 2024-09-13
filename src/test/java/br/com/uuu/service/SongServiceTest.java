@@ -23,13 +23,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.uuu.converter.SongConverter;
 import br.com.uuu.json.input.song.SongCreateInput;
+import br.com.uuu.json.input.song.SongDetailsCreateInput;
 import br.com.uuu.json.input.song.SongUpdateInput;
-import br.com.uuu.json.output.song.SongDetailsOutput;
 import br.com.uuu.json.output.song.SongOutput;
 import br.com.uuu.model.mongodb.entity.Song;
 import br.com.uuu.model.mongodb.repository.SongRepository;
 import br.com.uuu.model.mongodb.repository.SongRepositoryTest;
-import br.com.uuu.model.mongodb.util.SongDetails;
 
 
 public class SongServiceTest {
@@ -67,11 +66,10 @@ public class SongServiceTest {
 							Map.Entry::getKey,
 							entry -> {
 								var value = entry.getValue();
-								return SongDetailsOutput.builder()
+								return SongDetailsCreateInput.builder()
 										.title(value.getTitle())
 										.lyric(value.getLyric())
 										.submitterId(value.getSubmitterId())
-										.proofreaderIds(value.getProofreaderIds())
 									   .build();
 							}
 						))
