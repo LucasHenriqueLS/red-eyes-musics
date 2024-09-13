@@ -27,58 +27,88 @@ public class SongRepositoryTest {
     
     public static List<Song> getSongs() {
     	return List.of(
-		    		buildSong
-		    			(
-		    				List.of("64957a557f1d87179e9c77b9"),
-		    				List.of("Michael Jackson"),
-		    				"17b959647ad87179e9c7557f",
-		    				List.of("d87179e9c79647a557f17b95", "77b969e7a595f1d87174579c"),
-		    				"f17b9179e9c79645da557877",
-		    				Map.of(
-		    					"66c8b94ff5249d656c735e3a",
-		    					buildSongDetails("Billie Jean", "Billie Jean is not my lover...", "64957a557f1d87179e9c77f9", List.of("87179e9c77f964957a557f1d", "57f1d87179e9c77f964957a5")),
-		    					"5249d656c735e3a66c8b94ff",
-		    					buildSongDetails("Billie Jean", "Billie Jean não é meu amor...", "1d87179e4957a557f9c77f96", List.of("f1df964957a587179e9c7757", "9e9c77f957a557f1d8717964"))
-		    				),
-		    				294,
-		    				LocalDate.parse("1982-01-02"),
-		    				"https://www.youtube.com/watch?v=Zi_XLOBDo_Y"
-		    			),
-		    			buildSong
-		    			(
-		    				List.of("64957a557f1d87179e9c77a1"),
-		    				List.of("Ariana Grande", "Charles Anderson"),
-		    				"27b959647ad87179e9c7456f",
-		    				List.of("d87179e9c79647a557f17b96", "87b969e7a595f1d87174579d"),
-		    				"f17b9179e9c79645da557877",
-		    				Map.of(
-		    					"66c8b94ff5249d656c735e3a",
-		    					buildSongDetails("7 rings", "I want it, I got it...", "64957a557f1d87179e9c77f9", List.of("557f1d87179e9c77f964957a", "9c77f964957a557f1d87179e")),
-		    					"5249d656c735e3a66c8b94ff",
-		    					buildSongDetails("7 anéis", "Eu quero, eu consegui...", "1d87179e9c77f964957a557f", List.of("f964957a557f1d87179e9c77", "d87179e9c77f964957a557f1"))
-		    				),
-		    				178,
-		    				LocalDate.parse("2019-01-18"),
-		    				"https://www.youtube.com/watch?v=QYh6mYIJG2Y"
-		    			),
-		    			buildSong
-		    			(
-		    				List.of("64957a557f1d87179e9c77b2"),
-		    				List.of("Hans Zimmer"),
-		    				"37b959647ad87179e9c7557g",
-		    				List.of("d87179e9c79647a557f17b94", "77b969e7a595f1d87174579e"),
-		    				"f17b9179e9c79645da557877",
-		    				Map.of(
-		    					"66c8b94ff5249d656c735e3a",
-		    					buildSongDetails("Time", "Instrumental", "64957a557f1d87179e9c77f9", List.of("79e9c77f964957a557f1d871", "f1d87179e9c77f964957a557")),
-		    					"5249d656c735e3a66c8b94ff",
-		    					buildSongDetails("Tempo", "Instrumental", "d87179e9c77f9649f157a557", List.of("64957f1d87179e9c7757a5f9", "9c77f79e964957a557f1d871"))
-		    				),
-		    				248,
-		    				LocalDate.parse("2010-07-13"),
-		    				"https://www.youtube.com/watch?v=RxabLA7UQ9k"
-		    			)
-		    		);
+    				Song.builder()
+    					.artistIds(List.of("64957a557f1d87179e9c77b9"))
+    					.composerNames(List.of("Michael Jackson"))
+    					.albumId("17b959647ad87179e9c7557f")
+    					.genreIds(List.of("d87179e9c79647a557f17b95", "77b969e7a595f1d87174579c"))
+    					.originalLanguageId("f17b9179e9c79645da557877")
+    					.detailsByLanguageId(
+    						Map.of(
+								"66c8b94ff5249d656c735e3a",
+								SongDetails.builder()
+									.title("Billie Jean")
+									.lyric("Billie Jean is not my lover...")
+									.submitterId("64957a557f1d87179e9c77f9")
+									.proofreaderIds(List.of("87179e9c77f964957a557f1d", "57f1d87179e9c77f964957a5"))
+								.build(),
+								"5249d656c735e3a66c8b94ff",
+								SongDetails.builder()
+	   								.title("Billie Jean")
+	   								.lyric("Billie Jean não é meu amor...")
+	   								.submitterId("1d87179e4957a557f9c77f96")
+	   								.proofreaderIds(List.of("f1df964957a587179e9c7757", "9e9c77f957a557f1d8717964"))
+	   							.build()
+    						)
+    					).durationInSeconds(294)
+    					.releaseDate(LocalDate.parse("1982-01-02"))
+    					.videoLink("https://www.youtube.com/watch?v=Zi_XLOBDo_Y")
+    				.build(),
+    				Song.builder()
+						.artistIds(List.of("64957a557f1d87179e9c77a1"))
+						.composerNames(List.of("Ariana Grande", "Charles Anderson"))
+						.albumId("27b959647ad87179e9c7456f")
+						.genreIds(List.of("d87179e9c79647a557f17b96", "87b969e7a595f1d87174579d"))
+						.originalLanguageId("f17b9179e9c79645da557877")
+						.detailsByLanguageId(
+							Map.of(
+								"66c8b94ff5249d656c735e3a",
+								SongDetails.builder()
+									.title("7 rings")
+									.lyric("I want it, I got it...")
+									.submitterId("66c8b94ff5249d656c735e3a")
+									.proofreaderIds(List.of("557f1d87179e9c77f964957a", "9c77f964957a557f1d87179e"))
+								.build(),
+								"5249d656c735e3a66c8b94ff",
+								SongDetails.builder()
+	   								.title("7 anéis")
+	   								.lyric("Eu quero, eu consegui...")
+	   								.submitterId("1d87179e9c77f964957a557f")
+	   								.proofreaderIds(List.of("f964957a557f1d87179e9c77", "d87179e9c77f964957a557f1"))
+	   							.build()
+							)
+						).durationInSeconds(178)
+						.releaseDate(LocalDate.parse("2019-01-18"))
+						.videoLink("https://www.youtube.com/watch?v=QYh6mYIJG2Y")
+					.build(),
+					Song.builder()
+						.artistIds(List.of("64957a557f1d87179e9c77b2"))
+						.composerNames(List.of("Hans Zimmer"))
+						.albumId("37b959647ad87179e9c7557g")
+						.genreIds(List.of("d87179e9c79647a557f17b94", "77b969e7a595f1d87174579e"))
+						.originalLanguageId("f17b9179e9c79645da557877")
+						.detailsByLanguageId(
+							Map.of(
+								"66c8b94ff5249d656c735e3a",
+								SongDetails.builder()
+									.title("Time")
+									.lyric("Instrumental")
+									.submitterId("64957a557f1d87179e9c77f9")
+									.proofreaderIds(List.of("79e9c77f964957a557f1d871", "f1d87179e9c77f964957a557"))
+								.build(),
+								"5249d656c735e3a66c8b94ff",
+								SongDetails.builder()
+	   								.title("Tempo")
+	   								.lyric("Instrumental")
+	   								.submitterId("d87179e9c77f9649f157a557")
+	   								.proofreaderIds(List.of("64957f1d87179e9c7757a5f9", "9c77f79e964957a557f1d871"))
+	   							.build()
+							)
+						).durationInSeconds(248)
+						.releaseDate(LocalDate.parse("2010-07-13"))
+						.videoLink("https://www.youtube.com/watch?v=RxabLA7UQ9k")
+					.build()
+		    	);
     }
 
     @BeforeEach
@@ -87,29 +117,6 @@ public class SongRepositoryTest {
         songs = getSongs();
     }
 
-	private static Song buildSong(List<String> artistIds, List<String> composerNames, String albumId, List<String> genreIds, String originalLanguageId, Map<String, SongDetails> detailsByLanguageId, Integer durationInSeconds, LocalDate releaseDate, String videoLink) {
-		var song = new Song();
-		song.setArtistIds(artistIds);
-		song.setComposerNames(composerNames);
-		song.setAlbumId(albumId);
-		song.setGenreIds(genreIds);
-		song.setOriginalLanguageId(originalLanguageId);
-		song.setDetailsByLanguageId(detailsByLanguageId);
-		song.setDurationInSeconds(durationInSeconds);
-		song.setReleaseDate(releaseDate);
-		song.setVideoLink(videoLink);
-        return song;
-	}
-
-	private static SongDetails buildSongDetails(String title, String lyric, String submitterId, List<String> proofreaderIds) {
-		var songDetails = new SongDetails();
-		songDetails.setTitle(title);
-		songDetails.setLyric(lyric);
-		songDetails.setSubmitterId(submitterId);
-		songDetails.setProofreaderIds(proofreaderIds);
-		return songDetails;
-	}
-
 	private void checkSong(Song entity, Song song) {
 		assertThat(entity.getId()).isEqualTo(song.getId());
 		assertThat(entity.getArtistIds()).isEqualTo(song.getArtistIds());
@@ -117,7 +124,7 @@ public class SongRepositoryTest {
 		assertThat(entity.getAlbumId()).isEqualTo(song.getAlbumId());
 		assertThat(entity.getGenreIds()).isEqualTo(song.getGenreIds());
 		assertThat(entity.getOriginalLanguageId()).isEqualTo(song.getOriginalLanguageId());
-		assertThat(entity.getDetailsByLanguageId()).isEqualTo(song.getDetailsByLanguageId());
+		assertThat(entity.getDetailsByLanguageId()).usingRecursiveComparison().isEqualTo(song.getDetailsByLanguageId());
 		assertThat(entity.getDurationInSeconds()).isEqualTo(song.getDurationInSeconds());
 		assertThat(entity.getReleaseDate()).isEqualTo(song.getReleaseDate());
 		assertThat(entity.getVideoLink()).isEqualTo(song.getVideoLink());
