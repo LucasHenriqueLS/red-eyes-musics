@@ -83,10 +83,10 @@ class AlbumControllerTest {
     public void setup() throws Exception {
     	genres = GenreControllerTest.setupGenres(mockMvc, objectMapper, genreConverter);
     	artists = ArtistControllerTest.setupArtist(mockMvc, objectMapper, artistConverter, genres);
-    	setupArtists(artists, genres);
+    	setupAlbums(genres, artists);
     }
 
-    private void setupArtists(List<Artist> artists, List<Genre> genres) {
+    private void setupAlbums(List<Genre> genres, List<Artist> artists) {
     	var i = new AtomicInteger(0);
     	var random = new Random();	
         albumCreateInputs = AlbumRepositoryTest.getAlbums().stream().map(album -> {
@@ -406,5 +406,19 @@ class AlbumControllerTest {
     public void cleanUp() {
         mongoTemplate.getDb().drop();
     }
+
+	public static List<Album> setupAlbums(MockMvc mockMvc, ObjectMapper objectMapper, AlbumConverter albumConverter, List<Genre> genres, List<Artist> artists) throws Exception {
+		var albumControllerTest = new AlbumControllerTest();
+		return albumControllerTest.createAlbums(mockMvc, objectMapper, albumConverter, genres, artists);
+	}
+
+	private List<Album> createAlbums(MockMvc mockMvc, ObjectMapper objectMapper, AlbumConverter albumConverter, List<Genre> genres, List<Artist> artists) throws Exception {
+		this.albumConverter = albumConverter;
+		this.mockMvc = mockMvc;
+		this.objectMapper = objectMapper;
+		setupAlbums(genres, artists);
+		givenValidAlbumCreateInputWhenPostRequestThenReturnsCreatedStatusAndAlbumOutput();
+		return albums;
+	}
 
 }

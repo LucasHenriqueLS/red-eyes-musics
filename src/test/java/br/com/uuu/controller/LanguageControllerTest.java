@@ -64,10 +64,10 @@ class LanguageControllerTest {
 
     @BeforeAll
     public void setup(){
-    	setupLanguage();
+    	setupLanguages();
     }
 
-    private void setupLanguage() {
+    private void setupLanguages() {
     	languageCreateInputs = LanguageRepositoryTest.getLanguages().stream().map(language -> {
         	return LanguageCreateInput.builder()
         		.code(language.getCode())
@@ -282,5 +282,19 @@ class LanguageControllerTest {
     public void cleanUp() {
         mongoTemplate.getDb().drop();
     }
+
+	public static List<Language> setupLanguages(MockMvc mockMvc, ObjectMapper objectMapper, LanguageConverter languageConverter) throws Exception {
+		var languageControllerTest = new LanguageControllerTest();
+		return languageControllerTest.createLanguages(mockMvc, objectMapper, languageConverter);
+	}
+
+	private List<Language> createLanguages(MockMvc mockMvc, ObjectMapper objectMapper, LanguageConverter languageConverter) throws Exception {
+		this.languageConverter = languageConverter;
+		this.mockMvc = mockMvc;
+		this.objectMapper = objectMapper;
+		setupLanguages();
+		givenValidLanguageCreateInputWhenPostRequestThenReturnsCreatedStatusAndLanguageOutput();
+		return languages;
+	}
 
 }

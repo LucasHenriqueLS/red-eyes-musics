@@ -38,7 +38,7 @@ public class SongRepositoryTest {
 								"66c8b94ff5249d656c735e3a",
 								SongDetails.builder()
 									.title("Billie Jean")
-									.lyric("Billie Jean is not my lover...")
+									.lyric("Billie Jean não é minha amante...")
 									.submitterId("64957a557f1d87179e9c77f9")
 									.proofreaderIds(List.of("87179e9c77f964957a557f1d", "57f1d87179e9c77f964957a5"))
 								.build(),
@@ -117,17 +117,8 @@ public class SongRepositoryTest {
         songs = getSongs();
     }
 
-	private void checkSong(Song entity, Song song) {
-		assertThat(entity.getId()).isEqualTo(song.getId());
-		assertThat(entity.getArtistIds()).isEqualTo(song.getArtistIds());
-		assertThat(entity.getComposerNames()).isEqualTo(song.getComposerNames());
-		assertThat(entity.getAlbumId()).isEqualTo(song.getAlbumId());
-		assertThat(entity.getGenreIds()).isEqualTo(song.getGenreIds());
-		assertThat(entity.getOriginalLanguageId()).isEqualTo(song.getOriginalLanguageId());
-		assertThat(entity.getDetailsByLanguageId()).usingRecursiveComparison().isEqualTo(song.getDetailsByLanguageId());
-		assertThat(entity.getDurationInSeconds()).isEqualTo(song.getDurationInSeconds());
-		assertThat(entity.getReleaseDate()).isEqualTo(song.getReleaseDate());
-		assertThat(entity.getVideoLink()).isEqualTo(song.getVideoLink());
+	private <T> void checkOutput(T entity, T song) {
+		assertThat(entity).usingRecursiveComparison().isEqualTo(song);
 	}
 
 	private Optional<Song> findById(String id) {
@@ -161,7 +152,7 @@ public class SongRepositoryTest {
     		var optional = findById(song.getId());
     		assertThat(optional).isPresent();
     		optional.ifPresent(entity -> {
-    			checkSong(entity, song);
+    			checkOutput(entity, song);
     		});
     	}
     }
@@ -180,7 +171,7 @@ public class SongRepositoryTest {
 	    var allSong = findAll();
 	    assertThat(allSong).hasSize(songs.size());
 	    for (int i = 0; i < songs.size(); i++) {
-	    	checkSong(allSong.get(i), songs.get(i));
+	    	checkOutput(allSong.get(i), songs.get(i));
 	    }
 	}
 

@@ -1,7 +1,5 @@
 package br.com.uuu.model.mongodb.entity;
 
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -25,10 +23,10 @@ public class User {
 	
 	private String password;
 	
-	private String profileImageUrl;
-	
-	private List<String> favoriteGenreIds;
-	
-	private List<String> followingArtistIds;
+//	private String profileImageUrl;
+//	
+//	private List<String> favoriteGenreIds;
+//	
+//	private List<String> followingArtistIds;
 
 }

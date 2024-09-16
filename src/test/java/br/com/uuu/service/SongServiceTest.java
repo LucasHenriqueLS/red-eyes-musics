@@ -24,7 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 import br.com.uuu.converter.SongConverter;
 import br.com.uuu.json.input.song.SongCreateInput;
 import br.com.uuu.json.input.song.SongDetailsCreateInput;
+import br.com.uuu.json.input.song.SongDetailsUpdateInput;
 import br.com.uuu.json.input.song.SongUpdateInput;
+import br.com.uuu.json.output.song.SongDetailsOutput;
 import br.com.uuu.json.output.song.SongOutput;
 import br.com.uuu.model.mongodb.entity.Song;
 import br.com.uuu.model.mongodb.repository.SongRepository;
@@ -63,15 +65,12 @@ public class SongServiceTest {
 					.originalLanguageId(song.getOriginalLanguageId())
 					.detailsByLanguageId(
 						song.getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
-							Map.Entry::getKey,
-							entry -> {
-								var value = entry.getValue();
-								return SongDetailsCreateInput.builder()
-										.title(value.getTitle())
-										.lyric(value.getLyric())
-										.submitterId(value.getSubmitterId())
-									   .build();
-							}
+							Map.Entry::getKey, entry ->
+								SongDetailsCreateInput.builder()
+									.title(entry.getValue().getTitle())
+									.lyric(entry.getValue().getLyric())
+									.submitterId(entry.getValue().getSubmitterId())
+								.build()
 						))
 					)
 					.durationInSeconds(song.getDurationInSeconds())
@@ -87,7 +86,17 @@ public class SongServiceTest {
 					.albumId(song.getAlbumId())
 					.genreIds(song.getGenreIds())
 					.originalLanguageId(song.getOriginalLanguageId())
-					.detailsByLanguageId(null)
+					.detailsByLanguageId(
+						song.getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+							Map.Entry::getKey, entry ->
+								SongDetailsOutput.builder()
+									.title(entry.getValue().getTitle())
+									.lyric(entry.getValue().getLyric())
+									.submitterId(entry.getValue().getSubmitterId())
+									.proofreaderIds(entry.getValue().getProofreaderIds())
+								.build()
+						))
+					)
 					.durationInSeconds(song.getDurationInSeconds())
 					.releaseDate(song.getReleaseDate())
 					.videoLink(song.getVideoLink())
@@ -95,14 +104,8 @@ public class SongServiceTest {
 			).toList();
     }
 
-    private void checkSong(SongOutput output, SongOutput song) {
-		assertThat(output.getId()).isEqualTo(song.getId());
-		assertThat(output.getTitle()).isEqualTo(song.getTitle());
-		assertThat(output.getReleaseDate()).isEqualTo(song.getReleaseDate());
-		assertThat(output.getArtistIds()).isEqualTo(song.getArtistIds());
-		assertThat(output.getCoverUrl()).isEqualTo(song.getCoverUrl());
-		assertThat(output.getGenreIds()).isEqualTo(song.getGenreIds());
-		assertThat(output.getRecordCompanyName()).isEqualTo(song.getRecordCompanyName());
+    private <T> void checkOutput(T output, T song) {
+    	assertThat(output).usingRecursiveComparison().isEqualTo(song);
 	}
 
     @Test
@@ -118,7 +121,7 @@ public class SongServiceTest {
         var output = songService.saveFromInputToOutput(songCreateInput);
 
         assertThat(output).isNotNull();
-        checkSong(output, songOutput);
+        checkOutput(output, songOutput);
         
         verify(songConverter).toEntity(any(Song.class), eq(songCreateInput));
         verify(songRepository).save(song);
@@ -136,7 +139,7 @@ public class SongServiceTest {
         var output = songService.getByIdToOutput("1");
 
         assertThat(output).isNotNull();
-        checkSong(output, songOutput);
+        checkOutput(output, songOutput);
 
         verify(songRepository).findById("1");
         verify(songConverter).toOutput(song);
@@ -174,12 +177,31 @@ public class SongServiceTest {
     	var songOutput = songOutputs.get(2);
     	var songUpdateInput =
     		SongUpdateInput.builder()
-    			.title("Thriller (Special Edition)")
-    			.releaseDate(LocalDate.parse("1982-11-30"))
-    			.artistIds(List.of("a87179e9c79647a557f17b95"))
-    			.coverUrl("https://example.com/images/thriller_special_edition.jpg")
-    			.genreIds(List.of("b969e7a595f1d87174579c", "c87179e9c79647a557f17b95", "g87179e9c79647a557f17b95"))
-    			.recordCompanyName("Epic Records")
+	    		.artistIds(List.of("64957a557f1d87179e9c77b9"))
+				.composerNames(List.of("Michael Joseph Jackson"))
+				.albumId("87179e9c7557f17b959647ad")
+				.genreIds(List.of("79647a557f17b95d87179e9c", "e7a595f1d87174579c77b969","57f1d87179e9c77f964957a5"))
+				.originalLanguageId("f17b9179e9c79645da557877")
+				.detailsByLanguageId(
+					Map.of(
+						"66c8b94ff5249d656c735e3a",
+						SongDetailsUpdateInput.builder()
+							.title("Billie Jean")
+							.lyric("Billie Jean is not my lover... She's just a girl who claims that I am the one...")
+							.submitterId("64957a557f1d87179e9c77f9")
+							.proofreaderIds(List.of("87179e9c77f964957a557f1d", "57f1d87179e9c77f964957a5"))
+						.build(),
+						"5249d656c735e3a66c8b94ff",
+						SongDetailsUpdateInput.builder()
+								.title("Billie Jean")
+								.lyric("Billie Jean não é minha amante... Ela é apenas uma garota que afirma que eu sou o único...")
+								.submitterId("1d87179e4957a557f9c77f96")
+								.proofreaderIds(List.of("f1df964957a587179e9c7757", "9e9c77f957a557f1d8717964", "64957a557f1d87179e9c77f9"))
+							.build()
+					)
+				).durationInSeconds(297)
+				.releaseDate(LocalDate.parse("1982-01-02"))
+				.videoLink("https://www.youtube.com/watch?v=Si_BDXLOo_T")
     		.build();
 
     	when(songConverter.toEntity(song, songUpdateInput)).thenReturn(updatedSong);
@@ -190,7 +212,7 @@ public class SongServiceTest {
         var output = songService.updateFromInputToOutput("1", songUpdateInput);
 
         assertThat(output).isNotNull();
-        checkSong(output, songOutput);
+        checkOutput(output, songOutput);
 
         verify(songConverter).toEntity(song, songUpdateInput);
         verify(songRepository).findById("1");

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,6 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 @AllArgsConstructor
 @Builder
 public class SongUpdateInput {
@@ -43,7 +45,7 @@ public class SongUpdateInput {
 	private String originalLanguageId;
 
 	@Schema(description = "Detalhes da música para cada ID de idioma mapeado", example = "{\"66c8b94ff5249d656c735e3a\" : {\"title\" : \"Billie Jean\", \"lyric\" : \"Billie Jean is not my lover...\", \"submitterId\" : \"64957a557f1d87179e9c77f9\"}}")
-	private Map<String, SongDetailsCreateInput> detailsByLanguageId;
+	private Map<String, SongDetailsUpdateInput> detailsByLanguageId;
 
 	@Positive(message = "deve ser maior que zero")
 	@Schema(description = "Duração da música em segundos", example = "294")
