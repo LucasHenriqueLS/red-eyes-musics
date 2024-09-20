@@ -103,7 +103,7 @@ class SongControllerTest {
     private void setupSongs(List<Genre> genres, List<Artist> artists, List<Album> albums) {
     	var i = new AtomicInteger(0);
     	var j = new AtomicInteger(0);
-    	var random = new Random();	
+    	var random = new Random();
         songCreateInputs = SongRepositoryTest.getSongs().stream().map(song ->
         	SongCreateInput.builder()
     			.artistIds(List.of(artists.get(i.get()).getId()))

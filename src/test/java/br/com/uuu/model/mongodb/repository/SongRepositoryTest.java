@@ -52,7 +52,7 @@ public class SongRepositoryTest {
     						)
     					).durationInSeconds(294)
     					.releaseDate(LocalDate.parse("1982-01-02"))
-    					.videoLink("https://www.youtube.com/watch?v=Zi_XLOBDo_Y")
+    					.videoUrl("https://www.youtube.com/watch?v=Zi_XLOBDo_Y")
     				.build(),
     				Song.builder()
 						.artistIds(List.of("64957a557f1d87179e9c77a1"))
@@ -79,7 +79,7 @@ public class SongRepositoryTest {
 							)
 						).durationInSeconds(178)
 						.releaseDate(LocalDate.parse("2019-01-18"))
-						.videoLink("https://www.youtube.com/watch?v=QYh6mYIJG2Y")
+						.videoUrl("https://www.youtube.com/watch?v=QYh6mYIJG2Y")
 					.build(),
 					Song.builder()
 						.artistIds(List.of("64957a557f1d87179e9c77b2"))
@@ -106,7 +106,7 @@ public class SongRepositoryTest {
 							)
 						).durationInSeconds(248)
 						.releaseDate(LocalDate.parse("2010-07-13"))
-						.videoLink("https://www.youtube.com/watch?v=RxabLA7UQ9k")
+						.videoUrl("https://www.youtube.com/watch?v=RxabLA7UQ9k")
 					.build()
 		    	);
     }

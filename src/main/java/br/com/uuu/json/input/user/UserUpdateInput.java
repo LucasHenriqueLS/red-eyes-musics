@@ -3,32 +3,30 @@ package br.com.uuu.json.input.user;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCreateInput {
+public class UserUpdateInput {
 
-	@NotBlank(message = "não pode ser nulo ou vazio")
+	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
 	@Schema(description = "Nome do usuário", example = "user")
 	private String username;
 
-	@NotBlank(message = "não pode ser nulo ou vazio")
+	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
 	@Schema(description = "E-mail do usuário", example = "example@email.com")
 	private String email;
 
-	@NotBlank(message = "não pode ser nulo ou vazio")
+	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
 	@Schema(description = "Senha do usuário", example = "12345678")
 	private String password;
 

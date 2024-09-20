@@ -46,7 +46,7 @@ public class Song {
 	
 	private LocalDate releaseDate;
 	
-	private String videoLink;
+	private String videoUrl;
 
 	public Song() {
 		artistIds = new ArrayList<>();

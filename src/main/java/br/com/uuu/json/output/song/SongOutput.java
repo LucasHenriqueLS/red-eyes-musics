@@ -33,6 +33,6 @@ public class SongOutput {
 
 	private LocalDate releaseDate;
 	
-	private String videoLink;
+	private String videoUrl;
 
 }

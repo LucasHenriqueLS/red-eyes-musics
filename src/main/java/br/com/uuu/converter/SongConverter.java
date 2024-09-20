@@ -52,7 +52,7 @@ public class SongConverter {
 
 		song.setDurationInSeconds(input.getDurationInSeconds());
 		song.setReleaseDate(input.getReleaseDate());
-		song.setVideoLink(input.getVideoLink());
+		song.setVideoLink(input.getVideoUrl());
 
 		return song;
 	}

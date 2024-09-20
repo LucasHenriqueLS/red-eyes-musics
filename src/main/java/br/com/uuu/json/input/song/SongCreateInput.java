@@ -64,7 +64,7 @@ public class SongCreateInput {
 	private LocalDate releaseDate;
 	
 	@NotBlank(message = "não pode ser nulo ou vazio")
-	@Schema(description = "Link do vídeo da música", example = "https://www.youtube.com/watch?v=Zi_XLOBDo_Y")	
-	private String videoLink;
+	@Schema(description = "Url do vídeo da música", example = "https://www.youtube.com/watch?v=Zi_XLOBDo_Y")	
+	private String videoUrl;
 
 }

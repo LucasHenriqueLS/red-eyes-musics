@@ -75,7 +75,7 @@ public class SongServiceTest {
 					)
 					.durationInSeconds(song.getDurationInSeconds())
 					.releaseDate(song.getReleaseDate())
-					.videoLink(song.getVideoLink())
+					.videoUrl(song.getVideoUrl())
 				.build()
 			).toList();
         songOutputs = songs.stream().map(song ->
@@ -99,7 +99,7 @@ public class SongServiceTest {
 					)
 					.durationInSeconds(song.getDurationInSeconds())
 					.releaseDate(song.getReleaseDate())
-					.videoLink(song.getVideoLink())
+					.videoUrl(song.getVideoUrl())
 				.build()
 			).toList();
     }
