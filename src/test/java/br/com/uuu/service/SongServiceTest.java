@@ -201,7 +201,7 @@ public class SongServiceTest {
 					)
 				).durationInSeconds(297)
 				.releaseDate(LocalDate.parse("1982-01-02"))
-				.videoLink("https://www.youtube.com/watch?v=Si_BDXLOo_T")
+				.videoUrl("https://www.youtube.com/watch?v=Si_BDXLOo_T")
     		.build();
 
     	when(songConverter.toEntity(song, songUpdateInput)).thenReturn(updatedSong);

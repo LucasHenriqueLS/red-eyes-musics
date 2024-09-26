@@ -1,9 +1,12 @@
 package br.com.uuu.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -38,6 +41,8 @@ import br.com.uuu.converter.UserConverter;
 import br.com.uuu.error.exception.ErrorResponse;
 import br.com.uuu.json.input.song.SongCreateInput;
 import br.com.uuu.json.input.song.SongDetailsCreateInput;
+import br.com.uuu.json.input.song.SongDetailsUpdateInput;
+import br.com.uuu.json.input.song.SongUpdateInput;
 import br.com.uuu.json.output.song.SongDetailsOutput;
 import br.com.uuu.json.output.song.SongOutput;
 import br.com.uuu.model.mongodb.entity.Album;
@@ -47,6 +52,7 @@ import br.com.uuu.model.mongodb.entity.Language;
 import br.com.uuu.model.mongodb.entity.Song;
 import br.com.uuu.model.mongodb.entity.User;
 import br.com.uuu.model.mongodb.repository.SongRepositoryTest;
+import br.com.uuu.util.Checker;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -139,89 +145,41 @@ class SongControllerTest {
     	songOutputs = songs.stream().map(entity -> songConverter.toOutput(entity)).collect(Collectors.toList());
     }
 
-    private <T> void checkList(ResultActions response, List<T> list, String jsonPath, TriConsumer<ResultActions, T, String> verifier) throws Exception {
-        response
-            .andExpect(jsonPath(String.format("%s", jsonPath)).isArray())
-            .andExpect(jsonPath(String.format("%s.length()", jsonPath)).value(list.size()));
-        
-        for (int i = 0; i < list.size(); i++) {
-            verifier.accept(response, list.get(i), String.format("%s[%d]", jsonPath, i));
-        }
-    }
-
-    private <T> void check(ResultActions response, T value, String jsonPath, TriConsumer<ResultActions, T, String> verifier) throws Exception {
-    	verifier.accept(response, value, jsonPath);
-    }
-    
-    private <T> void check(ResultActions response, T value, String jsonPath, Consumer4<ResultActions, T, String, TriConsumer<ResultActions, T, String>> verifier, TriConsumer<ResultActions, T, String> subVerifier) throws Exception {
-    	verifier.accept(response, value, jsonPath, subVerifier);
-    }
-    
-    private <T> void checkPrimitive(ResultActions response, T value, String jsonPath) throws Exception {
-    	response.andExpect(jsonPath(jsonPath).value(value));
-    }
-    
-    private <K, V> void checkMap(ResultActions response, Map<K, V> map, String jsonPath) throws Exception {
-        response
-        .andExpect(jsonPath(jsonPath).isMap())
-        .andExpect(jsonPath(String.format("%s.length()", jsonPath)).value(map.size()));
-        for (var entry : map.entrySet()) {
-        	checkSongDetailsOutput(response, (SongDetailsOutput) entry.getValue(), String.format("%s.%s", jsonPath, entry.getKey()));
-        }
-    }
-
     private void checkSongOutput(ResultActions response, SongOutput songOutput, String jsonPath) throws Exception {
     	response
-    	.andExpect(jsonPath(String.format("%s.id", jsonPath)).value(songOutput.getId()))
-    	.andExpect(jsonPath(String.format("%s.albumId", jsonPath)).value(songOutput.getAlbumId()))
-    	.andExpect(jsonPath(String.format("%s.originalLanguageId", jsonPath)).value(songOutput.getOriginalLanguageId()))
-    	.andExpect(jsonPath(String.format("%s.durationInSeconds", jsonPath)).value(songOutput.getDurationInSeconds()))
-    	.andExpect(jsonPath(String.format("%s.videoUrl", jsonPath)).value(songOutput.getVideoUrl()))
-    	.andExpect(jsonPath(String.format("%s.releaseDate", jsonPath)).value(songOutput.getReleaseDate().toString()));
-    	check(response, songOutput.getComposerNames(), String.format("%s.composerNames", jsonPath), (t, u, v) -> {
-            try {
-                checkList(t, u, v, (response1, item, path) -> {
-                    try {
-						checkPrimitive(response1, item, path);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-//    	checkList(response, songOutput.getComposerNames(), String.format("%s.composerNames", jsonPath));
-//    	checkList(response, songOutput.getArtistIds(), String.format("%s.artistIds", jsonPath));
-//    	checkList(response, songOutput.getGenreIds(), String.format("%s.genreIds", jsonPath));
-//    	checkMap(response, songOutput.getDetailsByLanguageId(), String.format("%s.detailsByLanguageId", jsonPath));
+	    	.andExpect(jsonPath(String.format("%s.id", jsonPath)).value(songOutput.getId()))
+	    	.andExpect(jsonPath(String.format("%s.albumId", jsonPath)).value(songOutput.getAlbumId()))
+	    	.andExpect(jsonPath(String.format("%s.originalLanguageId", jsonPath)).value(songOutput.getOriginalLanguageId()))
+	    	.andExpect(jsonPath(String.format("%s.durationInSeconds", jsonPath)).value(songOutput.getDurationInSeconds()))
+	    	.andExpect(jsonPath(String.format("%s.videoUrl", jsonPath)).value(songOutput.getVideoUrl()))
+	    	.andExpect(jsonPath(String.format("%s.releaseDate", jsonPath)).value(songOutput.getReleaseDate().toString()));
+
+    	Checker.checkList(response, songOutput.getComposerNames(), String.format("%s.composerNames", jsonPath), Checker::check);
+    	Checker.checkList(response, songOutput.getArtistIds(), String.format("%s.artistIds", jsonPath), Checker::check);
+    	Checker.checkList(response, songOutput.getGenreIds(), String.format("%s.genreIds", jsonPath), Checker::check);
+    	Checker.checkMap(response, songOutput.getDetailsByLanguageId(), String.format("%s.detailsByLanguageId", jsonPath), this::checkSongDetailsOutput);
     }
 
-    private void checkSongDetailsOutput(ResultActions response, SongDetailsOutput songDetailsOutput, String jsonPath) throws Exception {
-    	response
-    	.andExpect(jsonPath(String.format("%s.title", jsonPath)).value(songDetailsOutput.getTitle()))
-    	.andExpect(jsonPath(String.format("%s.lyric", jsonPath)).value(songDetailsOutput.getLyric()))
-    	.andExpect(jsonPath(String.format("%s.submitterId", jsonPath)).value(songDetailsOutput.getSubmitterId()));
+    private void checkSongDetailsOutput(ResultActions response, SongDetailsOutput songDetailsOutput, String jsonPath) {
+    	try {
+			response
+				.andExpect(jsonPath(String.format("%s.title", jsonPath)).value(songDetailsOutput.getTitle()))
+				.andExpect(jsonPath(String.format("%s.lyric", jsonPath)).value(songDetailsOutput.getLyric()))
+				.andExpect(jsonPath(String.format("%s.submitterId", jsonPath)).value(songDetailsOutput.getSubmitterId()));
 
-//    	if (jsonPathExists(response,  String.format("%s.proofreaderIds", jsonPath))) {
-//    		checkList(response, songDetailsOutput.getProofreaderIds(), String.format("%s.proofreaderIds", jsonPath));    		
-//    	}
-    }
-    
-    private Boolean jsonPathExists(ResultActions response, String jsonPath) throws Exception {
-        try {
-            response.andExpect(jsonPath(jsonPath).exists());
-            return Boolean.TRUE;
-        } catch (AssertionError e) {
-            return Boolean.FALSE;
-        }
+			if (Checker.jsonPathExists(response,  String.format("%s.proofreaderIds", jsonPath))) {
+				Checker.checkList(response, songDetailsOutput.getProofreaderIds(), String.format("%s.proofreaderIds", jsonPath), Checker::check);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
     }
 
     private void checkErrorResponse(ResultActions response, ErrorResponse errorResponse, String jsonPath) throws Exception {
     	response
-    	.andExpect(jsonPath(String.format("%s.status", jsonPath)).value(errorResponse.getStatus()))
-        .andExpect(jsonPath(String.format("%s.message", jsonPath)).value(errorResponse.getMessage()))
-        .andExpect(jsonPath(String.format("%s.timestamp", jsonPath)).isNotEmpty());
+	    	.andExpect(jsonPath(String.format("%s.status", jsonPath)).value(errorResponse.getStatus()))
+	        .andExpect(jsonPath(String.format("%s.message", jsonPath)).value(errorResponse.getMessage()))
+	        .andExpect(jsonPath(String.format("%s.timestamp", jsonPath)).isNotEmpty());
     }
 
 	@Test
@@ -245,183 +203,368 @@ class SongControllerTest {
 		}
     }
 
-//	@Test
-//	@Order(2)
-//    void givenInvalidSongCreateInputWithAllFieldsEmptyWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
-//		var response = mockMvc.perform(post("/songs")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("{}"))
-//                .andExpect(status().isBadRequest());
-//
-//		var errorResponse = ErrorResponse.badRequest("{artistIds=não pode ser nulo ou vazio, genreIds=não pode ser nulo ou vazio, releaseDate=não pode ser nulo, title=não pode ser nulo, vazio ou conter somente espaços em branco}");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
+	@Test
+	@Order(2)
+    void givenInvalidSongCreateInputWithAllFieldsEmptyWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isBadRequest());
+
+		var errorResponse = ErrorResponse.badRequest("{artistIds=não pode ser nulo ou vazio, detailsByLanguageId=não pode ser nulo, durationInSeconds=não pode ser nulo, genreIds=não pode ser nulo ou vazio, originalLanguageId=não pode ser nulo ou vazio, releaseDate=não pode ser nulo, videoUrl=não pode ser nulo ou vazio}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(3)
+    void givenInvalidSongCreateInputWithAllFieldsInvalidWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var songCreateInput =
+			SongCreateInput.builder()
+				.artistIds(List.of())
+				.composerNames(List.of())
+				.albumId(" ")
+				.genreIds(List.of())
+				.originalLanguageId(" ")
+				.detailsByLanguageId(
+					Map.of(
+						"invalid_key_1",
+						SongDetailsCreateInput.builder()
+							.title(" ")
+							.lyric(" ")
+							.submitterId(" ")
+						.build()
+					)
+				)
+				.durationInSeconds(0)
+				.releaseDate(LocalDate.parse("2030-06-15"))
+				.videoUrl(" ")
+	    	.build();
+
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(songCreateInput)))
+                .andExpect(status().isBadRequest());
+
+		var errorResponse = ErrorResponse.badRequest("{albumId=não pode ser vazio ou conter somente espaços em branco se não for nulo, artistIds=não pode ser nulo ou vazio, composerNames=não pode ser vazio se não for nulo, durationInSeconds=deve ser maior que zero, genreIds=não pode ser nulo ou vazio, originalLanguageId=não pode ser nulo ou vazio, releaseDate=deve ser a data atual ou uma data passada, videoUrl=não pode ser nulo ou vazio}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(4)
+    void givenInvalidSongCreateInputWithInvalidArtistIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songCreateInput =
+			SongCreateInput.builder()
+				.artistIds(List.of("invalid_id_1", "invalid_id_2"))
+				.composerNames(songs.get(0).getComposerNames())
+				.albumId(songs.get(0).getAlbumId())
+				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
+				.originalLanguageId(songs.get(0).getOriginalLanguageId())
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsCreateInput.builder()
+								.title(entry.getValue().getTitle())
+								.lyric(entry.getValue().getLyric())
+								.submitterId("invalid_id_1")
+							.build()
+					))
+				)
+				.durationInSeconds(songs.get(0).getDurationInSeconds())
+				.releaseDate(songs.get(0).getReleaseDate())
+				.videoUrl(songs.get(0).getVideoUrl())
+	    	.build();
+
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(songCreateInput)))
+                .andExpect(status().isNotFound());
+
+		var errorResponse = ErrorResponse.notFound("Artistas com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+	
+	@Test
+	@Order(5)
+    void givenInvalidSongCreateInputWithInvalidGenreIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songCreateInput =
+			SongCreateInput.builder()
+				.artistIds(songs.get(0).getArtistIds())
+				.composerNames(songs.get(0).getComposerNames())
+				.albumId(songs.get(0).getAlbumId())
+				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
+				.originalLanguageId(songs.get(0).getOriginalLanguageId())
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsCreateInput.builder()
+								.title(entry.getValue().getTitle())
+								.lyric(entry.getValue().getLyric())
+								.submitterId("invalid_id_1")
+							.build()
+					))
+				)
+				.durationInSeconds(songs.get(0).getDurationInSeconds())
+				.releaseDate(songs.get(0).getReleaseDate())
+				.videoUrl(songs.get(0).getVideoUrl())
+	    	.build();
+
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(songCreateInput)))
+                .andExpect(status().isNotFound());
+
+		var errorResponse = ErrorResponse.notFound("Gêneros com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+	
+	@Test
+	@Order(6)
+    void givenInvalidSongCreateInputWithInvalidOriginalLanguageIdWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songCreateInput =
+			SongCreateInput.builder()
+				.artistIds(songs.get(0).getArtistIds())
+				.composerNames(songs.get(0).getComposerNames())
+				.albumId(songs.get(0).getAlbumId())
+				.genreIds(songs.get(0).getGenreIds())
+				.originalLanguageId("invalid_id_1")
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsCreateInput.builder()
+								.title(entry.getValue().getTitle())
+								.lyric(entry.getValue().getLyric())
+								.submitterId("invalid_id_1")
+							.build()
+					))
+				)
+				.durationInSeconds(songs.get(0).getDurationInSeconds())
+				.releaseDate(songs.get(0).getReleaseDate())
+				.videoUrl(songs.get(0).getVideoUrl())
+	    	.build();
+
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(songCreateInput)))
+                .andExpect(status().isNotFound());
+
+		var errorResponse = ErrorResponse.notFound("Idioma com o ID invalid_id_1 não foi encontrado");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(7)
+    void givenInvalidSongCreateInputWithInvalidSongDetailsLanguageIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songCreateInput =
+			SongCreateInput.builder()
+				.artistIds(songs.get(0).getArtistIds())
+				.composerNames(songs.get(0).getComposerNames())
+				.albumId(songs.get(0).getAlbumId())
+				.genreIds(songs.get(0).getGenreIds())
+				.originalLanguageId(songs.get(0).getOriginalLanguageId())
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsCreateInput.builder()
+								.title(entry.getValue().getTitle())
+								.lyric(entry.getValue().getLyric())
+								.submitterId("invalid_id_1")
+							.build()
+					))
+				)
+				.durationInSeconds(songs.get(0).getDurationInSeconds())
+				.releaseDate(songs.get(0).getReleaseDate())
+				.videoUrl(songs.get(0).getVideoUrl())
+	    	.build();
+
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(songCreateInput)))
+                .andExpect(status().isNotFound());
+
+		var errorResponse = ErrorResponse.notFound("Idioma com o ID invalid_id_1 não foi encontrado");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(8)
+    void givenInvalidSongCreateInputWithInvalidSubmitterIdWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var songCreateInput =
+			SongCreateInput.builder()
+				.artistIds(songs.get(0).getArtistIds())
+				.composerNames(songs.get(0).getComposerNames())
+				.albumId(songs.get(0).getAlbumId())
+				.genreIds(songs.get(0).getGenreIds())
+				.originalLanguageId(songs.get(0).getOriginalLanguageId())
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> entry.getKey(),
+						entry ->
+							SongDetailsCreateInput.builder()
+								.title(entry.getValue().getTitle())
+								.lyric(entry.getValue().getLyric())
+								.submitterId("invalid_id_1")
+							.build()
+					))
+				)
+				.durationInSeconds(songs.get(0).getDurationInSeconds())
+				.releaseDate(songs.get(0).getReleaseDate())
+				.videoUrl(songs.get(0).getVideoUrl())
+	    	.build();
+
+		var response = mockMvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(songCreateInput)))
+                .andExpect(status().isNotFound());
+
+		var errorResponse = ErrorResponse.notFound("Usuário com o ID invalid_id_1 não foi encontrado");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(9)
+    void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfSongOutputs() throws Exception {
+		getAll();
+    }
+
+	private void getAll() throws Exception {
+		var response = mockMvc.perform(get("/songs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(songOutputs.size()));
+
+        for (int i = 0; i < songOutputs.size(); i++) {
+        	var songOutput = songOutputs.get(i);
+	        checkSongOutput(response, songOutput, String.format("$[%d]", i));
+	    }
+	}
+
+	@Test
+	@Order(10)
+    void givenValidSongIdWhenGetByIdAfterPostRequesThenReturnsOkStatusAndSongOutput() throws Exception {
+        getById();
+    }
+
+	private void getById() throws Exception {
+		for (var songOutput : songOutputs) {
+			var response = mockMvc.perform(get("/songs/get-by-id/{id}", songOutput.getId()))
+				.andExpect(status().isOk());
+			checkSongOutput(response, songOutput, "$");
+		}
+	}
+
+	@Test
+	@Order(11)
+    void givenInvalidSongIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+    	var id = "invalid_id";
+		var response = mockMvc.perform(get("/songs/get-by-id/{id}", id))
+    		.andExpect(status().isNotFound());
+
+    	var errorResponse = ErrorResponse.notFound(String.format("Música com o ID %s não foi encontrado", id));
+    	checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(12)
+    void givenValidSongUpdateInputWhenPutRequestThenReturnsOkStatusAndSongOutput() throws Exception {
+		var random = new Random();
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.artistIds(List.of(artists.get(0).getId()))
+				.composerNames(List.of("Michael Joseph Jackson"))
+				.albumId(albums.get(0).getId())
+				.genreIds(List.of(genres.get(0).getId(), genres.get(1).getId(), genres.get(2).getId()))
+				.originalLanguageId(languages.get(0).getId())
+				.detailsByLanguageId(
+					Map.of(
+						languages.get(0).getId(),
+						SongDetailsUpdateInput.builder()
+							.title("Billie Jean")
+							.lyric("Billie Jean is not my lover... She's just a girl who claims that I am the one...")
+							.submitterId(users.get(0).getId())
+							.proofreaderIds(List.of(users.get(random.nextInt(2)).getId(), users.get(random.nextInt(2)).getId()))
+						.build(),
+						languages.get(1).getId(),
+						SongDetailsUpdateInput.builder()
+							.title("Billie Jean")
+							.lyric("Billie Jean não é minha amante... Ela é apenas uma garota que afirma que eu sou o único...")
+							.submitterId(users.get(1).getId())
+							.proofreaderIds(List.of(users.get(random.nextInt(2)).getId(), users.get(random.nextInt(2)).getId(), users.get(random.nextInt(2)).getId()))
+						.build()
+					)
+				).durationInSeconds(297)
+				.releaseDate(LocalDate.parse("1982-01-02"))
+				.videoUrl("https://www.youtube.com/watch?v=Si_BDXLOo_T")
+			.build();
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isOk());
+
+        songConverter.toEntity(songs.get(0), songUpdateInput);
+        var updatedSongOutput = songConverter.toOutput(songs.get(0));
+        songOutputs.set(0, updatedSongOutput);
+
+        checkSongOutput(response, updatedSongOutput, "$");
+    }
+
+	@Test
+	@Order(13)
+    void givenValidSongUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndSongOutput() throws Exception {
+        var songOutput = songOutputs.get(0);
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
+            .andExpect(status().isOk());
+        checkSongOutput(response, songOutput, "$");
+    }
+
+	@Test
+	@Order(14)
+    void givenInvalidSongUpdateInputWithAllFieldsInvalidWhenPutRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.artistIds(List.of())
+				.composerNames(List.of())
+				.albumId(" ")
+				.genreIds(List.of())
+				.originalLanguageId(" ")
+				.detailsByLanguageId(
+					Map.of(
+						"invalid_key_1",
+						SongDetailsUpdateInput.builder()
+							.title(" ")
+							.lyric(" ")
+							.submitterId(" ")
+							.proofreaderIds(List.of())
+						.build()
+					)
+				)
+				.durationInSeconds(0)
+				.releaseDate(LocalDate.parse("2030-06-15"))
+				.videoUrl(" ")
+    		.build();
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isBadRequest());
+
+        var errorResponse = ErrorResponse.badRequest("{albumId=não pode ser vazio ou conter somente espaços em branco se não for nulo, artistIds=não pode ser vazio se não for nulo, composerNames=não pode ser vazio se não for nulo, durationInSeconds=deve ser maior que zero, genreIds=não pode ser vazio se não for nulo, originalLanguageId=não pode ser vazio ou conter somente espaços em branco se não for nulo, releaseDate=deve ser a data atual ou uma data passada, videoUrl=não pode ser vazio ou conter somente espaços em branco se não for nulo}");
+		checkErrorResponse(response, errorResponse, "$");
+    }
 
 //	@Test
-//	@Order(3)
-//    void givenInvalidSongCreateInputWithAllFieldsInvalidWhenPostRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
-//		var songCreateInput =
-//			SongCreateInput.builder()
-//				.title(" ")
-//	    		.releaseDate(LocalDate.parse("2030-06-15"))
-//	    		.artistIds(List.of())
-//	    		.genreIds(List.of())
-//	    	.build();
-//
-//		var response = mockMvc.perform(post("/songs")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(songCreateInput)))
-//                .andExpect(status().isBadRequest());
-//
-//		var errorResponse = ErrorResponse.badRequest("{artistIds=não pode ser nulo ou vazio, genreIds=não pode ser nulo ou vazio, releaseDate=deve ser a data atual ou uma data passada, title=não pode ser nulo, vazio ou conter somente espaços em branco}");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
-//
-//	@Test
-//	@Order(3)
-//    void givenInvalidSongCreateInputWithInvalidArtistIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
-//		var songCreateInput =
-//			SongCreateInput.builder()
-//				.title(songs.get(0).getTitle())
-//				.releaseDate(songs.get(0).getReleaseDate())
-//				.artistIds(List.of("invalid_id_1", "invalid_id_2"))
-//				.coverUrl(songs.get(0).getCoverUrl())
-//				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
-//				.recordCompanyName(songs.get(0).getRecordCompanyName())
-//			.build();
-//
-//		var response = mockMvc.perform(post("/songs")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(songCreateInput)))
-//                .andExpect(status().isNotFound());
-//
-//		var errorResponse = ErrorResponse.notFound("Artistas com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
-//	
-//	@Test
-//	@Order(4)
-//    void givenInvalidSongCreateInputWithInvalidGenreIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
-//		var songCreateInput =
-//			SongCreateInput.builder()
-//				.title(songs.get(0).getTitle())
-//				.releaseDate(songs.get(0).getReleaseDate())
-//				.artistIds(songs.get(0).getArtistIds())
-//				.coverUrl(songs.get(0).getCoverUrl())
-//				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
-//				.recordCompanyName(songs.get(0).getRecordCompanyName())
-//			.build();
-//
-//		var response = mockMvc.perform(post("/songs")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(songCreateInput)))
-//                .andExpect(status().isNotFound());
-//
-//		var errorResponse = ErrorResponse.notFound("Gêneros com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
-//
-//	@Test
-//	@Order(5)
-//    void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfSongOutputs() throws Exception {
-//		getAll();
-//    }
-//
-//	private void getAll() throws Exception {
-//		var response = mockMvc.perform(get("/songs"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$").isArray())
-//                .andExpect(jsonPath("$.length()").value(songOutputs.size()));
-//
-//        for (int i = 0; i < songOutputs.size(); i++) {
-//        	var songOutput = songOutputs.get(i);
-//	        checkSongOutput(response, songOutput, String.format("$[%d]", i));
-//	    }
-//	}
-//
-//	@Test
-//	@Order(6)
-//    void givenValidSongIdWhenGetByIdAfterPostRequesThenReturnsOkStatusAndSongOutput() throws Exception {
-//        getById();
-//    }
-//
-//	private void getById() throws Exception {
-//		for (var songOutput : songOutputs) {
-//			var response = mockMvc.perform(get("/songs/get-by-id/{id}", songOutput.getId()))
-//				.andExpect(status().isOk());
-//			checkSongOutput(response, songOutput, "$");
-//		}
-//	}
-//
-//	@Test
-//	@Order(7)
-//    void givenInvalidSongIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
-//    	var id = "invalid_id";
-//		var response = mockMvc.perform(get("/songs/get-by-id/{id}", id))
-//    		.andExpect(status().isNotFound());
-//
-//    	var errorResponse = ErrorResponse.notFound(String.format("Álbum com o ID %s não foi encontrado", id));
-//    	checkErrorResponse(response, errorResponse, "$");
-//    }
-//
-//	@Test
-//	@Order(8)
-//    void givenValidSongUpdateInputWhenPutRequestThenReturnsOkStatusAndSongOutput() throws Exception {
-//		var songUpdateInput =
-//			SongUpdateInput.builder()
-//    			.title("Thriller (Special Edition)")
-//    			.releaseDate(LocalDate.parse("1982-11-30"))
-//    			.artistIds(List.of(artists.get(0).getId()))
-//    			.coverUrl("https://example.com/images/thriller_special_edition.jpg")
-//    			.genreIds(List.of(genres.get(0).getId(), genres.get(1).getId(), genres.get(2).getId()))
-//    			.recordCompanyName("Epic Records")
-//    		.build();
-//
-//        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(songUpdateInput)))
-//            .andExpect(status().isOk());
-//
-//        songConverter.toEntity(songs.get(0), songUpdateInput);
-//        var updatedSongOutput = songConverter.toOutput(songs.get(0));
-//        songOutputs.set(0, updatedSongOutput);
-//
-//        checkSongOutput(response, updatedSongOutput, "$");
-//    }
-//
-//	@Test
-//	@Order(9)
-//    void givenValidSongUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndSongOutput() throws Exception {
-//        var songOutput = songOutputs.get(0);
-//
-//        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content("{}"))
-//            .andExpect(status().isOk());
-//        checkSongOutput(response, songOutput, "$");
-//    }
-//
-//	@Test
-//	@Order(10)
-//    void givenInvalidSongUpdateInputWithAllFieldsInvalidWhenPutRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
-//		var songUpdateInput =
-//			SongUpdateInput.builder()
-//    			.title(" ")
-//    			.releaseDate(LocalDate.parse("2030-06-15"))
-//    			.coverUrl(" ")
-//    		.build();
-//
-//        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(songUpdateInput)))
-//            .andExpect(status().isBadRequest());
-//
-//        var errorResponse = ErrorResponse.badRequest("{releaseDate=deve ser a data atual ou uma data passada, title=não pode ser vazio ou conter somente espaços em branco se não for nulo}");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
-//
-//	@Test
-//	@Order(11)
+//	@Order(13)
 //    void givenInvalidSongUpdateInputWithInvalidArtistIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
 //		var songUpdateInput =
 //			SongUpdateInput.builder()
@@ -437,7 +580,7 @@ class SongControllerTest {
 //        var errorResponse = ErrorResponse.notFound("Artistas com os IDs [invalid_id_1] não foram encontrados");
 //		checkErrorResponse(response, errorResponse, "$");
 //    }
-//
+
 //	@Test
 //	@Order(12)
 //    void givenInvalidSongUpdateInputWithInvalidGenreIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
@@ -503,12 +646,4 @@ class SongControllerTest {
 
 }
 
-@FunctionalInterface
-interface TriConsumer<T, U, V> {
-    void accept(T t, U u, V v);
-}
 
-@FunctionalInterface
-interface Consumer4<T, U, V, W> {
-    void accept(T t, U u, V v, W w);
-}

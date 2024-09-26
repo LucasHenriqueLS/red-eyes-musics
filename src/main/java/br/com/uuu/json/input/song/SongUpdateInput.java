@@ -57,6 +57,6 @@ public class SongUpdateInput {
 	
 	@Pattern(regexp = ".*\\S.*", message = "não pode ser vazio ou conter somente espaços em branco se não for nulo")
 	@Schema(description = "Link do vídeo da música", example = "https://www.youtube.com/watch?v=Zi_XLOBDo_Y")	
-	private String videoLink;
+	private String videoUrl;
 
 }

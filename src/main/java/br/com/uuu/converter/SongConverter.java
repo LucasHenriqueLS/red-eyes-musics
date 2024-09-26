@@ -44,10 +44,10 @@ public class SongConverter {
 		setComposerNamesIfIsValid(song, input.getComposerNames());
 		setAlbumIfIsValid(song, input.getAlbumId());
 		setGenresIfIsValid(song, input.getGenreIds());
-		setOriginalLanguageIfIsValid(song, input.getOriginalLanguageId());
+		song.setOriginalLanguageId(getLanguageIdIfIsValid(input.getOriginalLanguageId()));
 
 		input.getDetailsByLanguageId().forEach((language, songDetailsInput) ->  {
-			song.getDetailsByLanguageId().put(language, songDetailsConverter.toEntity(new SongDetails(), songDetailsInput));
+			song.getDetailsByLanguageId().put(getLanguageIdIfIsValid(language), songDetailsConverter.toEntity(new SongDetails(), songDetailsInput));
 		});
 
 		song.setDurationInSeconds(input.getDurationInSeconds());
@@ -62,7 +62,7 @@ public class SongConverter {
 		Optional.ofNullable(input.getComposerNames()).ifPresent(composerNames -> setComposerNamesIfIsValid(song, composerNames));
 		Optional.ofNullable(input.getAlbumId()).ifPresent(albumId -> setAlbumIfIsValid(song, albumId));
 		Optional.ofNullable(input.getGenreIds()).ifPresent(genreIds -> setGenresIfIsValid(song, genreIds));
-		Optional.ofNullable(input.getOriginalLanguageId()).ifPresent(originalLanguageId -> setOriginalLanguageIfIsValid(song, originalLanguageId));
+		Optional.ofNullable(input.getOriginalLanguageId()).ifPresent(originalLanguageId -> song.setOriginalLanguageId(getLanguageIdIfIsValid(originalLanguageId)));
 
 		Optional.ofNullable(input.getDetailsByLanguageId()).ifPresent(detailsByLanguageId ->
 			detailsByLanguageId.forEach((language, songDetailsInput) ->  {
@@ -72,7 +72,7 @@ public class SongConverter {
 
 		Optional.ofNullable(input.getDurationInSeconds()).ifPresent(song::setDurationInSeconds);
 		Optional.ofNullable(input.getReleaseDate()).ifPresent(song::setReleaseDate);
-		Optional.ofNullable(input.getVideoLink()).ifPresent(song::setVideoUrl);
+		Optional.ofNullable(input.getVideoUrl()).ifPresent(song::setVideoUrl);
 
 		return song;
 	}
@@ -113,11 +113,11 @@ public class SongConverter {
 		}
 	}
 
-	private void setOriginalLanguageIfIsValid(Song song, String originalLanguageId) {
-		if (languageService.existsById(originalLanguageId)) {
-			song.setOriginalLanguageId(originalLanguageId);
+	private String getLanguageIdIfIsValid(String languageId) {
+		if (languageService.existsById(languageId)) {
+			return languageId;
 		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Idioma com o ID %s não foi encontrado", originalLanguageId));
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Idioma com o ID %s não foi encontrado", languageId));
 		}
 	}
 
