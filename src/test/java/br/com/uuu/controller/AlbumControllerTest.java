@@ -184,7 +184,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(3)
+	@Order(4)
     void givenInvalidAlbumCreateInputWithInvalidArtistIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
 		var albumCreateInput =
 			AlbumCreateInput.builder()
@@ -206,7 +206,7 @@ class AlbumControllerTest {
     }
 	
 	@Test
-	@Order(4)
+	@Order(5)
     void givenInvalidAlbumCreateInputWithInvalidGenreIdsWhenPostRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
 		var albumCreateInput =
 			AlbumCreateInput.builder()
@@ -228,7 +228,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(5)
+	@Order(6)
     void whenGetAllRequestAfterPostRequestThenReturnsOkStatusAndListOfAlbumOutputs() throws Exception {
 		getAll();
     }
@@ -246,7 +246,7 @@ class AlbumControllerTest {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
     void givenValidAlbumIdWhenGetByIdAfterPostRequesThenReturnsOkStatusAndAlbumOutput() throws Exception {
         getById();
     }
@@ -260,7 +260,7 @@ class AlbumControllerTest {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
     void givenInvalidAlbumIdWhenGetByIdThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
     	var id = "invalid_id";
 		var response = mockMvc.perform(get("/albums/get-by-id/{id}", id))
@@ -271,7 +271,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(8)
+	@Order(9)
     void givenValidAlbumUpdateInputWhenPutRequestThenReturnsOkStatusAndAlbumOutput() throws Exception {
 		var albumUpdateInput =
 			AlbumUpdateInput.builder()
@@ -296,7 +296,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(9)
+	@Order(10)
     void givenValidAlbumUpdateInputWithAllFieldsEmptyWhenPutRequestThenReturnsOkStatusAndAlbumOutput() throws Exception {
         var albumOutput = albumOutputs.get(0);
 
@@ -308,7 +308,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(10)
+	@Order(11)
     void givenInvalidAlbumUpdateInputWithAllFieldsInvalidWhenPutRequestThenReturnsBadRequestStatusAndErrorResponse() throws Exception {
 		var albumUpdateInput =
 			AlbumUpdateInput.builder()
@@ -327,7 +327,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(11)
+	@Order(12)
     void givenInvalidAlbumUpdateInputWithInvalidArtistIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
 		var albumUpdateInput =
 			AlbumUpdateInput.builder()
@@ -345,7 +345,7 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(12)
+	@Order(13)
     void givenInvalidAlbumUpdateInputWithInvalidGenreIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
 		var albumUpdateInput =
 			AlbumUpdateInput.builder()
@@ -362,19 +362,19 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(13)
+	@Order(14)
     void whenGetAllRequestAfterPutRequestThenReturnsOkStatusAndListOfAlbumOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(14)
+	@Order(15)
     void givenValidGenreIdWhenGetByIdAfterPutRequestThenReturnsOkStatusAndAlbumOutput() throws Exception {
         getById();
     }
 
 	@Test
-	@Order(15)
+	@Order(16)
     void givenValidAlbumIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/albums/{id}", albums.get(0).getId()))
             .andExpect(status().isOk());
@@ -384,20 +384,20 @@ class AlbumControllerTest {
     }
 
 	@Test
-	@Order(16)
+	@Order(17)
     void givenInvalidAlbumIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
 		mockMvc.perform(delete("/albums/{id}", "invalid_id"))
             .andExpect(status().isOk());
     }
 
 	@Test
-	@Order(17)
+	@Order(18)
     void whenGetAllRequestAfterDeleteRequestThenReturnsOkStatusAndListOfAlbumOutputs() throws Exception {
 		getAll();
     }
 
 	@Test
-	@Order(18)
+	@Order(19)
     void givenValidAlbumIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndAlbumOutput() throws Exception {
         getById();
     }

@@ -52,7 +52,7 @@ public class SongConverter {
 
 		song.setDurationInSeconds(input.getDurationInSeconds());
 		song.setReleaseDate(input.getReleaseDate());
-		song.setVideoLink(input.getVideoUrl());
+		song.setVideoUrl(input.getVideoUrl());
 
 		return song;
 	}
@@ -72,7 +72,7 @@ public class SongConverter {
 
 		Optional.ofNullable(input.getDurationInSeconds()).ifPresent(song::setDurationInSeconds);
 		Optional.ofNullable(input.getReleaseDate()).ifPresent(song::setReleaseDate);
-		Optional.ofNullable(input.getVideoLink()).ifPresent(song::setVideoLink);
+		Optional.ofNullable(input.getVideoLink()).ifPresent(song::setVideoUrl);
 
 		return song;
 	}
@@ -144,7 +144,7 @@ public class SongConverter {
 				)
 				.durationInSeconds(song.getDurationInSeconds())
 				.releaseDate(song.getReleaseDate())
-				.videoLink(song.getVideoLink())
+				.videoUrl(song.getVideoUrl())
 			   .build();
 	}
 
