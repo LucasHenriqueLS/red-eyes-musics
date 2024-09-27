@@ -5,24 +5,22 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
+import br.com.uuu.converter.util.GetIdsIfAreValid;
 import br.com.uuu.json.input.song.SongDetailsCreateInput;
 import br.com.uuu.json.input.song.SongDetailsUpdateInput;
 import br.com.uuu.json.output.song.SongDetailsOutput;
 import br.com.uuu.model.mongodb.util.SongDetails;
-import br.com.uuu.service.UserService;
 
 @Component
 public class SongDetailsConverter {
 
 	@Autowired
-	private UserService userService;
+	private GetIdsIfAreValid getIdsIfAreValid;
 	
 	public SongDetails toEntity(SongDetails songDetails, SongDetailsCreateInput input) {
-		setSubmitterIfIsValid(songDetails, input.getSubmitterId());
+		songDetails.setSubmitterId(getIdsIfAreValid.getUserId(input.getSubmitterId()));
 
 		songDetails.setTitle(input.getTitle());
 		songDetails.setLyric(input.getLyric());
@@ -31,8 +29,8 @@ public class SongDetailsConverter {
 	}
 
 	public SongDetails toEntity(SongDetails songDetails, SongDetailsUpdateInput input) {
-		Optional.ofNullable(input.getSubmitterId()).ifPresent(submitterId -> setSubmitterIfIsValid(songDetails, submitterId));
-		Optional.ofNullable(input.getProofreaderIds()).ifPresent(proofreaderId -> setProofreadersIfIsValid(songDetails, proofreaderId));
+		Optional.ofNullable(input.getSubmitterId()).ifPresent(submitterId -> songDetails.setSubmitterId(getIdsIfAreValid.getUserId(submitterId)));
+		Optional.ofNullable(input.getProofreaderIds()).ifPresent(proofreaderId -> songDetails.setProofreaderIds(getIdsIfAreValid.getUserIds(proofreaderId)));
 
 		Optional.ofNullable(input.getTitle()).ifPresent(songDetails::setTitle);
 		Optional.ofNullable(input.getLyric()).ifPresent(songDetails::setLyric);
@@ -40,23 +38,6 @@ public class SongDetailsConverter {
 		return songDetails;
 	}
 
-	private void setSubmitterIfIsValid(SongDetails songDetails, String submitterId) {
-		if (userService.existsById(submitterId)) {
-			songDetails.setSubmitterId(submitterId);
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Usuário com o ID %s não foi encontrado", submitterId));
-		}			
-	}
-
-	private void setProofreadersIfIsValid(SongDetails songDetails, List<String> proofreaderIds) {
-		var proofreaderIdsNotFound = userService.getAllIdsNotFound(proofreaderIds);
-		if (proofreaderIdsNotFound.isEmpty()) {
-			songDetails.setProofreaderIds(proofreaderIdsNotFound);
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Usuários com os IDs %s não foram encontrados", proofreaderIdsNotFound));
-		}			
-	}
-	
 	public List<SongDetailsOutput> toOutput(List<SongDetails> songDetailsList) {
 		var outputs = new ArrayList<SongDetailsOutput>();
 		for (var songDetails : songDetailsList) {

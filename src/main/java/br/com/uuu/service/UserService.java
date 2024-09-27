@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.uuu.converter.UserConverter;
-import br.com.uuu.json.dto.user.UserIdDTO;
+import br.com.uuu.json.dto.IdDTO;
 import br.com.uuu.json.input.user.UserCreateInput;
 import br.com.uuu.json.input.user.UserUpdateInput;
 import br.com.uuu.json.output.user.UserOutput;
@@ -45,7 +45,7 @@ public class UserService {
 	}
 
 	public List<String> getAllIdsNotFound(List<String> ids) {
-		var allIdsFound = userRepository.findAllByIdIn(ids).stream().map(UserIdDTO::id).toList();
+		var allIdsFound = userRepository.findAllByIdIn(ids).stream().map(IdDTO::id).toList();
 		return ids.stream().filter(id -> !allIdsFound.contains(id)).toList();
 	}
 

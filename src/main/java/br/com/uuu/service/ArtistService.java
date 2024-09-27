@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.uuu.converter.ArtistConverter;
-import br.com.uuu.json.dto.artist.ArtistIdDTO;
+import br.com.uuu.json.dto.IdDTO;
 import br.com.uuu.json.input.artist.ArtistCreateInput;
 import br.com.uuu.json.input.artist.ArtistUpdateInput;
 import br.com.uuu.json.output.artist.ArtistOutput;
@@ -41,7 +41,7 @@ public class ArtistService {
 	}
 
 	public List<String> getAllIdsNotFound(List<String> ids) {
-		var allIdsFound = artistRepository.findAllByIdIn(ids).stream().map(ArtistIdDTO::id).toList();
+		var allIdsFound = artistRepository.findAllByIdIn(ids).stream().map(IdDTO::id).toList();
         return ids.stream().filter(id -> !allIdsFound.contains(id)).toList();
     }
 

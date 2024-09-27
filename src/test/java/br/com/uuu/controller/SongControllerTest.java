@@ -1,5 +1,6 @@
 package br.com.uuu.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -259,7 +261,7 @@ class SongControllerTest {
 				.composerNames(songs.get(0).getComposerNames())
 				.albumId(songs.get(0).getAlbumId())
 				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
-				.originalLanguageId(songs.get(0).getOriginalLanguageId())
+				.originalLanguageId("invalid_id_1")
 				.detailsByLanguageId(
 					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
 						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
@@ -268,7 +270,9 @@ class SongControllerTest {
 								.title(entry.getValue().getTitle())
 								.lyric(entry.getValue().getLyric())
 								.submitterId("invalid_id_1")
-							.build()
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
 					))
 				)
 				.durationInSeconds(songs.get(0).getDurationInSeconds())
@@ -295,7 +299,7 @@ class SongControllerTest {
 				.composerNames(songs.get(0).getComposerNames())
 				.albumId(songs.get(0).getAlbumId())
 				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
-				.originalLanguageId(songs.get(0).getOriginalLanguageId())
+				.originalLanguageId("invalid_id_1")
 				.detailsByLanguageId(
 					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
 						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
@@ -304,7 +308,9 @@ class SongControllerTest {
 								.title(entry.getValue().getTitle())
 								.lyric(entry.getValue().getLyric())
 								.submitterId("invalid_id_1")
-							.build()
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
 					))
 				)
 				.durationInSeconds(songs.get(0).getDurationInSeconds())
@@ -340,7 +346,9 @@ class SongControllerTest {
 								.title(entry.getValue().getTitle())
 								.lyric(entry.getValue().getLyric())
 								.submitterId("invalid_id_1")
-							.build()
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
 					))
 				)
 				.durationInSeconds(songs.get(0).getDurationInSeconds())
@@ -376,7 +384,9 @@ class SongControllerTest {
 								.title(entry.getValue().getTitle())
 								.lyric(entry.getValue().getLyric())
 								.submitterId("invalid_id_1")
-							.build()
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
 					))
 				)
 				.durationInSeconds(songs.get(0).getDurationInSeconds())
@@ -411,7 +421,9 @@ class SongControllerTest {
 								.title(entry.getValue().getTitle())
 								.lyric(entry.getValue().getLyric())
 								.submitterId("invalid_id_1")
-							.build()
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
 					))
 				)
 				.durationInSeconds(songs.get(0).getDurationInSeconds())
@@ -563,81 +575,191 @@ class SongControllerTest {
 		checkErrorResponse(response, errorResponse, "$");
     }
 
-//	@Test
-//	@Order(13)
-//    void givenInvalidSongUpdateInputWithInvalidArtistIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
-//		var songUpdateInput =
-//			SongUpdateInput.builder()
-//				.artistIds(List.of("invalid_id_1"))
-//				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
-//			.build();
-//
-//        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(songUpdateInput)))
-//            .andExpect(status().isNotFound());
-//
-//        var errorResponse = ErrorResponse.notFound("Artistas com os IDs [invalid_id_1] não foram encontrados");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
+	@Test
+	@Order(15)
+    void givenInvalidSongUpdateInputWithInvalidArtistIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.artistIds(List.of("invalid_id_1", "invalid_id_2"))
+				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
+				.originalLanguageId("invalid_id_1")
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsUpdateInput.builder()
+								.submitterId("invalid_id_1")
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
+					))
+				)
+			.build();
 
-//	@Test
-//	@Order(12)
-//    void givenInvalidSongUpdateInputWithInvalidGenreIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
-//		var songUpdateInput =
-//			SongUpdateInput.builder()
-//				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
-//			.build();
-//
-//        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(songUpdateInput)))
-//            .andExpect(status().isNotFound());
-//
-//        var errorResponse = ErrorResponse.notFound("Gêneros com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
-//		checkErrorResponse(response, errorResponse, "$");
-//    }
-//
-//	@Test
-//	@Order(13)
-//    void whenGetAllRequestAfterPutRequestThenReturnsOkStatusAndListOfSongOutputs() throws Exception {
-//		getAll();
-//    }
-//
-//	@Test
-//	@Order(14)
-//    void givenValidGenreIdWhenGetByIdAfterPutRequestThenReturnsOkStatusAndSongOutput() throws Exception {
-//        getById();
-//    }
-//
-//	@Test
-//	@Order(15)
-//    void givenValidSongIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
-//		mockMvc.perform(delete("/songs/{id}", songs.get(0).getId()))
-//            .andExpect(status().isOk());
-//
-//		songs.remove(0);
-//		songOutputs.remove(0);
-//    }
-//
-//	@Test
-//	@Order(16)
-//    void givenInvalidSongIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
-//		mockMvc.perform(delete("/songs/{id}", "invalid_id"))
-//            .andExpect(status().isOk());
-//    }
-//
-//	@Test
-//	@Order(17)
-//    void whenGetAllRequestAfterDeleteRequestThenReturnsOkStatusAndListOfSongOutputs() throws Exception {
-//		getAll();
-//    }
-//
-//	@Test
-//	@Order(18)
-//    void givenValidSongIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndSongOutput() throws Exception {
-//        getById();
-//    }
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isNotFound());
+
+        var errorResponse = ErrorResponse.notFound("Artistas com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(16)
+    void givenInvalidSongUpdateInputWithInvalidGenreIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.genreIds(List.of("invalid_id_1", "invalid_id_2"))
+				.originalLanguageId("invalid_id_1")
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsUpdateInput.builder()
+								.submitterId("invalid_id_1")
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
+					))
+				)
+			.build();
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isNotFound());
+
+        var errorResponse = ErrorResponse.notFound("Gêneros com os IDs [invalid_id_1, invalid_id_2] não foram encontrados");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(17)
+    void givenInvalidSongUpdateInputWithInvalidOriginalLanguageIdWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.originalLanguageId("invalid_id_1")
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsUpdateInput.builder()
+								.submitterId("invalid_id_1")
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
+					))
+				)
+			.build();
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isNotFound());
+
+        var errorResponse = ErrorResponse.notFound("Idioma com o ID invalid_id_1 não foi encontrado");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(18)
+    void givenInvalidSongUpdateInputWithInvalidSongDetailsLanguageIdsWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var i = new AtomicInteger(1);
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> String.format("invalid_id_%d", i.getAndIncrement()),
+						entry ->
+							SongDetailsUpdateInput.builder()
+								.submitterId("invalid_id_1")
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
+					))
+				)
+			.build();
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isNotFound());
+
+        var errorResponse = ErrorResponse.notFound("Idioma com o ID invalid_id_1 não foi encontrado");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(19)
+    void givenInvalidSongUpdateInputWithInvalidSubmitterIdWhenPutRequestThenReturnsNotFoundStatusAndErrorResponse() throws Exception {
+		var songUpdateInput =
+			SongUpdateInput.builder()
+				.detailsByLanguageId(
+					songs.get(0).getDetailsByLanguageId().entrySet().stream().collect(Collectors.toMap(
+						entry -> entry.getKey(),
+						entry ->
+							SongDetailsUpdateInput.builder()
+								.submitterId("invalid_id_1")
+							.build(),
+						(oldValue, newValue) -> oldValue,
+						LinkedHashMap::new
+					))
+				)
+			.build();
+
+        var response = mockMvc.perform(put("/songs/{id}", songs.get(0).getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(songUpdateInput)))
+            .andExpect(status().isNotFound());
+
+        var errorResponse = ErrorResponse.notFound("Usuário com o ID invalid_id_1 não foi encontrado");
+		checkErrorResponse(response, errorResponse, "$");
+    }
+
+	@Test
+	@Order(20)
+    void whenGetAllRequestAfterPutRequestThenReturnsOkStatusAndListOfSongOutputs() throws Exception {
+		getAll();
+    }
+
+	@Test
+	@Order(21)
+    void givenValidGenreIdWhenGetByIdAfterPutRequestThenReturnsOkStatusAndSongOutput() throws Exception {
+        getById();
+    }
+
+	@Test
+	@Order(22)
+    void givenValidSongIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
+		mockMvc.perform(delete("/songs/{id}", songs.get(0).getId()))
+            .andExpect(status().isOk());
+
+		songs.remove(0);
+		songOutputs.remove(0);
+    }
+
+	@Test
+	@Order(23)
+    void givenInvalidSongIdWhenDeleteRequestThenReturnsOkStatus() throws Exception {
+		mockMvc.perform(delete("/songs/{id}", "invalid_id"))
+            .andExpect(status().isOk());
+    }
+
+	@Test
+	@Order(24)
+    void whenGetAllRequestAfterDeleteRequestThenReturnsOkStatusAndListOfSongOutputs() throws Exception {
+		getAll();
+    }
+
+	@Test
+	@Order(25)
+    void givenValidSongIdWhenGetByIdAfterDeleteRequestThenReturnsOkStatusAndSongOutput() throws Exception {
+        getById();
+    }
 
 	@AfterAll
     public void cleanUp() {

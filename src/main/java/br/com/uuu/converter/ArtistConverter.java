@@ -5,24 +5,22 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
+import br.com.uuu.converter.util.GetIdsIfAreValid;
 import br.com.uuu.json.input.artist.ArtistCreateInput;
 import br.com.uuu.json.input.artist.ArtistUpdateInput;
 import br.com.uuu.json.output.artist.ArtistOutput;
 import br.com.uuu.model.mongodb.entity.Artist;
-import br.com.uuu.service.GenreService;
 
 @Component
 public class ArtistConverter {
 	
 	@Autowired
-	private GenreService genreService;
+	private GetIdsIfAreValid getIdsIfAreValid;
 
 	public Artist toEntity(Artist artist, ArtistCreateInput input) {
-		setGenresIfIsValid(artist, input.getGenreIds());
+		artist.setGenreIds(getIdsIfAreValid.getGenreIds(input.getGenreIds()));
 
 		artist.setNames(input.getNames());
 		artist.setBio(input.getBio());
@@ -32,21 +30,13 @@ public class ArtistConverter {
 	}
 
 	public Artist toEntity(Artist artist, ArtistUpdateInput input) {
+		Optional.ofNullable(input.getGenreIds()).ifPresent(genreIds -> artist.setGenreIds(getIdsIfAreValid.getGenreIds(genreIds)));
+
 		Optional.ofNullable(input.getNames()).ifPresent(artist::setNames);
 		Optional.ofNullable(input.getBio()).ifPresent(artist::setBio);
-		Optional.ofNullable(input.getGenreIds()).ifPresent(genreIds -> setGenresIfIsValid(artist, genreIds));
 		Optional.ofNullable(input.getImageUrl()).ifPresent(artist::setImageUrl);
 
 		return artist;
-	}
-
-	private void setGenresIfIsValid(Artist artist, List<String> genreIds) {
-		var genreIdsNotFound = genreService.getAllIdsNotFound(genreIds);
-		if (genreIdsNotFound.isEmpty()) {
-			artist.setGenreIds(genreIds);
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Gêneros com os IDs %s não foram encontrados", genreIdsNotFound));
-		}
 	}
 
 	public List<ArtistOutput> toOutput(List<Artist> artists) {
